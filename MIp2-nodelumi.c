@@ -16,11 +16,16 @@
 
 /* Definició de constants, p.e., #define MAX_LINIA 150                    */
 
+#define MAXCLIENTS 10
 
 int main(int argc,char *argv[])
 {
     /* Declaració de variables, p.e., int n;                                 */
-
+    int fd, nClients;
+    char * nomFitxer= "MIp2-nodelumi.cfg";
+    char domini[30];
+    struct Client clients[MAXCLIENTS];
     /* Expressions, estructures de control, crides a funcions, etc.          */
-
+    fd=LUMI_iniServ(nomFitxer,nClients,clients, domini);
+    
 }
