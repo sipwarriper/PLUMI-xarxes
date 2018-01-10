@@ -350,7 +350,7 @@ int ResolDNSaIP(const char *NomDNS, char *IP)
 /* bé.                                                                    */
 int Log_CreaFitx(const char *NomFitxLog)
 {
-
+    return fopen(NomFitxLog,"w");
 }
 
 /* Escriu al fitxer de "log" d'identificador "FitxLog" el missatge de     */
@@ -361,6 +361,13 @@ int Log_CreaFitx(const char *NomFitxLog)
 /* "log" (sense el '\0') si tot va bé                                     */
 int Log_Escriu(int FitxLog, const char *MissLog)
 {
+    FILE *arxiu = FitxLog;
+    if(arxiu!=NULL){
+        fputs(MissLog,arxiu);
+        fputs("\n",arxiu);
+        return strlen(MissLog);
+    }
+    else return -1;
 
 }
 
@@ -368,7 +375,7 @@ int Log_Escriu(int FitxLog, const char *MissLog)
 /* Retorna -1 si hi ha error; un valor positiu qualsevol si tot va bé.    */
 int Log_TancaFitx(int FitxLog)
 {
-
+ fclose(FitxLog);
 }
 
 
