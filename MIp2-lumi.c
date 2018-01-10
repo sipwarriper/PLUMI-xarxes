@@ -153,7 +153,6 @@ int LUMI_Desregistre(int Sck, const char * MI){
 int LUMI_Registre(int Sck, const char * MI){
     char buffer[21];
     int b = sprintf(buffer,"%c%s",'R', MI);
-    int b = sprintf(buffer,"%c%s",'R', MI);
     return UDP_Envia(Sck, buffer, b);
 }
 int LUMI_Localitzacio();             //nse els parametres, mentre vagi necessitant afegiré
