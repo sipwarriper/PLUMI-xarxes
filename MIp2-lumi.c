@@ -22,6 +22,7 @@
 #include "MIp2-lumi.h"
 #include <fcntl.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 /* Definició de constants, p.e., #define MAX_LINIA 150                    */
 
@@ -64,10 +65,11 @@ int LUMI_crearSocket(const char *IPloc, int portUDPloc){
 }
 
 /* Funció que inicialitza el servidor LUMI amb la informació trobada al fitxer de configuraicó anomenat "nomFItxer"
- * i emplena "client" amb els clients trobats i "domini" amb el domini propi.
+ * i emplena "client" amb els clients trobats i "domini" amb el domini propi. A nClients fica el numero de clients que
+ * ha trobat.
  * Retorna -1 si hi ha error amb el fitxer i el codi identificatiu d'aquest en cas contrari
  * */
-int LUMI_iniServ(const char* nomFitxer, struct Client *client, char* domini){
+int LUMI_iniServ(const char* nomFitxer, int *nClients, struct Client *client, char* domini){
 
     int fid = open(nomFitxer,O_CREAT|O_TRUNC);
     int readB;
@@ -77,41 +79,51 @@ int LUMI_iniServ(const char* nomFitxer, struct Client *client, char* domini){
     if((readB=read(fid, buffer, 200))>0){
         strncpy(buffer, domini,readB);
         int i=0;
-        while ((readB=read(fid, buffer, 200))>0){
-           current=buffer;
-           current[readB]='\0';
-           int j=0;
-           while ((next = strchr(current, ' ')) != NULL) {
-               int cont=0;
-               switch(j){
-                   case 0: //cas del nom del client
-                       while (current[cont]!=next[0]) cont++;
-                       strncpy(client[i].nom,current,cont);
-                       break;
-                   case 1: //cas del estat del client
-                       //opcio1
-                       client[i].estat=strtol(current, (char**)NULL,10);
-                       break;
-                   case 2: //cas de la ip del client
-                       strncpy(client[j].IP,current,15);
-                       client[j].IP[15]='\0';
-                       break;
-               }
-               current = next + 1;
-               j++;
-           }
-           //tractament cas current no tractat (lultim)
-           client[i].port = strtol(current, (char**)NULL, 10);
-           i++;
-       }
+        while ((readB=read(fid, buffer, 200))>0) {
+            current = buffer;
+            current[readB] = '\0';
+            int j = 0;
+            while ((next = strchr(current, ' ')) != NULL) {
+                int cont = 0;
+                switch (j) {
+                    case 0: //cas del nom del client
+                        while (current[cont] != next[0]) cont++;
+                        strncpy(client[i].nom, current, cont);
+                        break;
+                    case 1: //cas del estat del client
+                        //opcio1
+                        client[i].estat = strtol(current, (char **) NULL, 10);
+                        break;
+                    case 2: //cas de la ip del client
+                        strncpy(client[j].IP, current, 15);
+                        client[j].IP[15] = '\0';
+                        break;
+                }
+                current = next + 1;
+                j++;
+            }
+            //tractament cas current no tractat (lultim)
+            client[i].port = strtol(current, (char **) NULL, 10);
+            i++;
+        }
+        *nClients=i;
        return fid;
     }
     else return -1;
 
 }
 
-int LUMI_ActualitzarFitxerRegistre(const struct Client *clients, int fid){
-
+int LUMI_ActualitzarFitxerRegistre(const struct Client *clients, int nClients, int fid, const char* domini){
+    int writeB = write(fid, domini, strlen(domini));
+    int i;
+    int a;
+    char buffer[200];
+    for (i=0; i<nClients; i++){
+        a = sprintf(buffer,"\n%s %d %s %d",clients[i].nom,clients[i].estat, clients[i].IP, clients[i].port);
+        writeB = write(fid, buffer, a);
+        i++;
+    }
+    return 1;
 }
 
 
