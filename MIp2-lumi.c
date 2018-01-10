@@ -141,21 +141,55 @@ int LUMI_connexio(int Sck, const char *IPrem, int portUDPrem){
 
 /*
  * Funció que demana una petició de desregistre al servidor connectat a Sck de l'usuari MI
- * Retorna -1 si hi ha error; el nombre de bytes enviats si tot va bé.    */
+ * Retorna -2 si no el servidor està desconectat; -1 si hi ha error; 0 si el desregistre es correcte; 1 si l'usuari no existeix; 2 si format incorrecte  */
 int LUMI_Desregistre(int Sck, const char * MI){
     char buffer[21];
     int b = sprintf(buffer,"%c%s",'D', MI);
-    return UDP_Envia(Sck, buffer, b);
+    int x, i=0;
+    if((x = UDP_Envia(Sck, buffer, b))==-1) return -1;
+    int a[0];
+    a[0]=Sck;
+    while((x = HaArribatAlgunaCosaEnTemps(a,1,2000))==-2 && i<5){
+        i++;
+        if((x = UDP_Envia(Sck, buffer, b))==-1) return -1;
+    }
+    if (x==-2) return -2;
+    x = UDP_Rep(Sck, buffer,21);
+    return ((int)buffer[1]-48);
 }
+
 /*
  * Funció que demana una petició de registre al servidor connectat a Sck de l'usuari MI
- * Retorna -1 si hi ha error; el nombre de bytes enviats si tot va bé.    */
+ * Retorna -2 si no el servidor està desconectat; -1 si hi ha error; 0 si el desregistre es correcte; 1 si l'usuari no existeix; 2 si format incorrecte  */
 int LUMI_Registre(int Sck, const char * MI){
     char buffer[21];
     int b = sprintf(buffer,"%c%s",'R', MI);
-    return UDP_Envia(Sck, buffer, b);
+    int x, i=0;
+    if((x = UDP_Envia(Sck, buffer, b))==-1) return -1;
+    int a[0];
+    a[0]=Sck;
+    while((x = HaArribatAlgunaCosaEnTemps(a,1,2000))==-2 && i<5){
+        i++;
+        if((x = UDP_Envia(Sck, buffer, b))==-1) return -1;
+    }
+    if (x==-2) return -2;
+    x = UDP_Rep(Sck, buffer,21);
+    return ((int)buffer[1]-48);
 }
+
 int LUMI_Localitzacio();             //nse els parametres, mentre vagi necessitant afegiré
+
+/*
+ * Funció que descxifra quina sol·licitud li han donat al servidor
+ * Retorna -1 si no coneix la petició; 0 si és desregistre, 1 si és Registre, 2 si es localització */
+int LUMI_ServDescxifrarRebut(const char* missatge) {
+    char a = missatge[0];
+    if(a=='D') return 0;
+    else if(a=='R') return 1;
+    else if(a=='L') return 2;
+    else return -1;
+}
+
 int LUMI_ServidorReg();              //nse els parametres, mentre vagi necessitant afegiré
 int LUMI_ServidorDesreg();           //nse els parametres, mentre vagi necessitant afegiré
 int LUMI_ServidorLoc();              //nse els parametres, mentre vagi necessitant afegiré
