@@ -35,5 +35,6 @@ int LUMI_ServDescxifrarRebut(const char* missatge);
 int LUMI_ServidorReg();              //nse els parametres, mentre vagi necessitant afegiré
 int LUMI_ServidorDesreg();           //nse els parametres, mentre vagi necessitant afegiré
 int LUMI_ServidorLoc();              //nse els parametres, mentre vagi necessitant afegiré
+int LUMI_ServidorRLoc();             //nse els parametres, mentre vagi necessitant afagiré
 
 
