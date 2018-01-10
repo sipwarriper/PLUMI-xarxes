@@ -259,7 +259,7 @@ int LUMI_ServidorDesreg(struct Client *clients, int nClients,const char *Entrada
     UDP_EnviaA(socket,IP,port,"0",2);
     return 0;
 }
-int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dominiloc, const char* IPsender, int portSender){
+int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dominiloc, struct Client *clients, int nClients){
     int i=1, j=0;
     char domini[20];
     while(missatge[i]!='@') i++;
@@ -270,7 +270,15 @@ int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dom
     }
     domini[j]='\0';
     if(strcmp(domini, dominiloc)==0){
-        //domini propi, has de enviar resposta, onde? on et diguin
+        //domini propi, has de buscar el client i enviarli la solicitud!
+        char nom[50];
+        for(j=1;j<i;j++) nom[j-1]=missatge[j];
+        nom[j]='\0';
+        //buscar als clients
+        int trobat=0, cont=0;
+        while(trobat==0 && cont<nClients){
+            if(strcpy(nom,clients))
+        }
     }
     else {
         //resoldre domini i repetir resposta
@@ -279,8 +287,8 @@ int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dom
         if (UDP_EnviaA(Sck,IP,1714,missatge,longMissatge)==-1) return -1;
     }
     return 1;
-
 }
+
 int LUMI_ServidorRLoc();             //nse els parametres, mentre vagi necessitant afegiré
 
 /* Definicio de funcions INTERNES, és a dir, d'aquelles que es faran      */
