@@ -12,7 +12,6 @@
 /*  (si les funcions externes es cridessin entre elles, faria falta fer   */
 /*   un #include "MIp2-lumi.h")                                           */
 
-#include "MIp2-lumi.h"
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -20,6 +19,8 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <netdb.h>
+#include "MIp2-lumi.h"
+#include <fcntl.h>
 
 /* Definició de constants, p.e., #define MAX_LINIA 150                    */
 
@@ -50,13 +51,40 @@ int Log_TancaFitx(int FitxLog);
 /* formen la interfície de la capa LUMI.                                  */
 /* Les funcions externes les heu de dissenyar vosaltres...                */
 
-/* Descripció del que fa la funció...                                     */
-/* Descripció dels arguments de la funció, què son, tipus, si es passen   */
-/* per valor o per referència (la funció els omple)...                    */
-/* Descripció dels valors de retorn de la funció...                       */
+/* Crea un socket UDP a l’@IP “IPloc” i #port UDP “portUDPloc”            */
+/* (si “IPloc” és “0.0.0.0” i/o “portUDPloc” és 0 es fa/farà una          */
+/* assignació implícita de l’@IP i/o del #port UDP, respectivament).      */
+/* "IPloc" és un "string" de C (vector de chars imprimibles acabat en     */
+/* '\0') d'una longitud màxima de 16 chars (incloent '\0')                */
+/* Retorna -1 si hi ha error; l’identificador del socket creat si tot     */
+/* va bé.                                                                 */
+int LUMI_crearSocket(const char *IPloc, int portUDPloc){
+    return UDP_CreaSock(IPloc, portUDPloc);
+}
+
+int LUMI_iniServ(const char* nomFitxer, struct Client *client){
+
+    int fid = open(nomFitxer,O_CREAT|O_TRUNC);
+
+}
+
+int LUMI_ActualitzarFitxerRegistre(const struct Client *clients, int fid){
+
+}
 
 
-//Aqui van les funcions externes: format--> int LUMI_FuncioExterna(arg1, arg2...);
+int LUMI_connexio(int Sck, const char *IPrem, int portUDPrem){
+    return UDP_DemanaConnexio(Sck,IPrem, portUDPrem);
+}
+
+
+int LUMI_Desregistre();              //nse els parametres, mentre vagi necessitant afegiré
+int LUMI_Registre();                 //nse els parametres, mentre vagi necessitant afegiré
+int LUMI_Localitzacio();             //nse els parametres, mentre vagi necessitant afegiré
+int LUMI_ServidorReg();              //nse els parametres, mentre vagi necessitant afegiré
+int LUMI_ServidorDesreg();           //nse els parametres, mentre vagi necessitant afegiré
+int LUMI_ServidorLoc();              //nse els parametres, mentre vagi necessitant afegiré
+
 
 /* Definicio de funcions INTERNES, és a dir, d'aquelles que es faran      */
 /* servir només en aquest mateix fitxer.                                  */
