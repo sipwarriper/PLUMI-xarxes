@@ -197,18 +197,42 @@ int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem){
 
 /*
  * Funció que descxifra quina sol·licitud li han donat al servidor
- * Retorna -1 si no coneix la petició; 0 si és desregistre, 1 si és Registre, 2 si es localització */
+ * Retorna -1 si no coneix la petició; 0 si és desregistre, 1 si és Registre, 2 si es localització i 3 si es resposta a Localització */
 int LUMI_ServDescxifrarRebut(const char* missatge) {
     char a = missatge[0];
     if(a=='D') return 0;
     else if(a=='R') return 1;
     else if(a=='L') return 2;
+    else if(a=='B') return 3;
     else return -1;
 }
 
 int LUMI_ServidorReg();              //nse els parametres, mentre vagi necessitant afegiré
 int LUMI_ServidorDesreg();           //nse els parametres, mentre vagi necessitant afegiré
-int LUMI_ServidorLoc();              //nse els parametres, mentre vagi necessitant afegiré
+
+
+int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dominiloc, const char* IPsender, int portSender){
+    int i=1, j=0;
+    char domini[20];
+    while(missatge[i]!='@') i++;
+    while(missatge[i]!='/'){
+        domini[j] = missatge[i];
+        i++;
+        j++;
+    }
+    domini[j]='\0';
+    if(strcmp(domini, dominiloc)==0){
+        //domini propi, has de enviar resposta, onde? on et diguin
+    }
+    else {
+        //resoldre domini i repetir resposta
+        char IP[16];
+        ResolDNSaIP(domini, IP);
+        if (UDP_EnviaA(Sck,IP,1714,missatge,longMissatge)==-1) return -1;
+    }
+    return 1;
+
+}
 int LUMI_ServidorRLoc();             //nse els parametres, mentre vagi necessitant afegiré
 
 /* Definicio de funcions INTERNES, és a dir, d'aquelles que es faran      */
