@@ -206,23 +206,42 @@ int LUMI_ServDescxifrarRebut(const char* missatge) {
     else if(a=='B') return 3;
     else return -1;
 }
-
-int LUMI_ServidorReg(struct Client *clients, int nClients,const char *Entrada, int fid, const char* domini){
+/*
+ * Funció que fa el registre d'un client al servidor, i envia la resposta adient al socket inicial, també actualitza el arxiu de clients
+ * */
+int LUMI_ServidorReg(struct Client *clients, int nClients,const char *Entrada,  const char *IP, int port, int fid,const char* domini, int socket) {
+    if (Entrada[0] != 'R') {
+        UDP_EnviaA(socket, IP, port, "2", 2);
+        return 2;
+    }
     char nom[150];
     strcpy(nom,&Entrada[1]);
     int acabat =0;
     for(int i =0;i<nClients && !acabat;i++){
         if(strcmp(clients[i].nom,nom)==0){
             clients[i].estat=LLIURE;
+            clients[i].port=port;
+            strcpy(clients[i].IP,IP);
             acabat=1;
         }
     }
-    if(!acabat) return 1;
-    else if(Entrada[0]!='R') return 2;
+    if(!acabat) {
+        UDP_EnviaA(socket,IP,port,"1",2);
+        return 1;
+    }
     LUMI_ActualitzarFitxerRegistre(clients,nClients,fid,domini);
+    UDP_EnviaA(socket,IP,port,"0",2);
     return 0;
 }
-int LUMI_ServidorDesreg( struct Client *clients, int nClients,const char *Entrada, int fid, const char* domini){
+
+/*
+ * Funció que fa el desregistre d'un client al servidor, i envia la resposta adient al socket inicial, també actualitza el arxiu de clients
+ * */
+int LUMI_ServidorDesreg(struct Client *clients, int nClients,const char *Entrada, const char *IP, int port, int fid, const char* domini, int socket){
+    if(Entrada[0]!='D'){
+        UDP_EnviaA(socket, IP, port, "2", 2);
+        return 2;
+    }
     char nom[150];
     strcpy(nom,&Entrada[1]);
     int acabat =0;
@@ -232,9 +251,12 @@ int LUMI_ServidorDesreg( struct Client *clients, int nClients,const char *Entrad
             acabat=1;
         }
     }
-    if(!acabat) return 1;
-    else if(Entrada[0]!='D') return 2;
+    if(!acabat) {
+        UDP_EnviaA(socket,IP,port,"0",2);
+        return 1;
+    }
     LUMI_ActualitzarFitxerRegistre(clients,nClients,fid,domini);
+    UDP_EnviaA(socket,IP,port,"0",2);
     return 0;
 }
 int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dominiloc, const char* IPsender, int portSender){
