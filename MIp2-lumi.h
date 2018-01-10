@@ -30,7 +30,7 @@ int LUMI_ActualitzarFitxerRegistre(const struct Client *clients, int nClients, i
 int LUMI_connexio(int Sck, const char *IPrem, int portUDPrem);
 int LUMI_Desregistre(int Sck, const char * MI);
 int LUMI_Registre(int Sck, const char * MI);
-int LUMI_Localitzacio();             //nse els parametres, mentre vagi necessitant afegiré
+int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem);
 int LUMI_ServDescxifrarRebut(const char* missatge);
 int LUMI_ServidorReg();              //nse els parametres, mentre vagi necessitant afegiré
 int LUMI_ServidorDesreg();           //nse els parametres, mentre vagi necessitant afegiré

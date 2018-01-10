@@ -144,7 +144,7 @@ int LUMI_connexio(int Sck, const char *IPrem, int portUDPrem){
  * Retorna -2 si no el servidor està desconectat; -1 si hi ha error; 0 si el desregistre es correcte; 1 si l'usuari no existeix; 2 si format incorrecte  */
 int LUMI_Desregistre(int Sck, const char * MI){
     char buffer[21];
-    int b = sprintf(buffer,"%c%s",'D', MI);
+    int b = sprintf(buffer,"D%s", MI);
     int x, i=0;
     if((x = UDP_Envia(Sck, buffer, b))==-1) return -1;
     int a[0];
@@ -163,7 +163,7 @@ int LUMI_Desregistre(int Sck, const char * MI){
  * Retorna -2 si no el servidor està desconectat; -1 si hi ha error; 0 si el desregistre es correcte; 1 si l'usuari no existeix; 2 si format incorrecte  */
 int LUMI_Registre(int Sck, const char * MI){
     char buffer[21];
-    int b = sprintf(buffer,"%c%s",'R', MI);
+    int b = sprintf(buffer,"R%s", MI);
     int x, i=0;
     if((x = UDP_Envia(Sck, buffer, b))==-1) return -1;
     int a[0];
@@ -177,7 +177,23 @@ int LUMI_Registre(int Sck, const char * MI){
     return ((int)buffer[1]-48);
 }
 
-int LUMI_Localitzacio();             //nse els parametres, mentre vagi necessitant afegiré
+int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem){
+    char buffer[40];
+    int b = sprintf(buffer,"L%s/%s",MIloc, MIrem);
+    int x, i=0;
+    if((x = UDP_Envia(Sck, buffer, b))==-1) return -1;
+    int a[0];
+    a[0]=Sck;
+    while((x = HaArribatAlgunaCosaEnTemps(a,1,2000))==-2 && i<5){
+        i++;
+        if((x = UDP_Envia(Sck, buffer, b))==-1) return -1;
+    }
+    if (x==-2) return -2;
+    x = UDP_Rep(Sck, buffer,21);
+    return ((int)buffer[1]-48);
+
+}
+
 
 /*
  * Funció que descxifra quina sol·licitud li han donat al servidor
