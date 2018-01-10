@@ -21,6 +21,7 @@
 #include <netdb.h>
 #include "MIp2-lumi.h"
 #include <fcntl.h>
+#include <stdlib.h>
 
 /* Definició de constants, p.e., #define MAX_LINIA 150                    */
 
@@ -51,7 +52,7 @@ int Log_TancaFitx(int FitxLog);
 /* formen la interfície de la capa LUMI.                                  */
 /* Les funcions externes les heu de dissenyar vosaltres...                */
 
-/* Crea un socket UDP a l’@IP “IPloc” i #port UDP “portUDPloc”            */
+/* Crea un socket LUMI a l’@IP “IPloc” i #port UDP “portUDPloc”            */
 /* (si “IPloc” és “0.0.0.0” i/o “portUDPloc” és 0 es fa/farà una          */
 /* assignació implícita de l’@IP i/o del #port UDP, respectivament).      */
 /* "IPloc" és un "string" de C (vector de chars imprimibles acabat en     */
@@ -62,9 +63,50 @@ int LUMI_crearSocket(const char *IPloc, int portUDPloc){
     return UDP_CreaSock(IPloc, portUDPloc);
 }
 
-int LUMI_iniServ(const char* nomFitxer, struct Client *client){
+/* Funció que inicialitza el servidor LUMI amb la informació trobada al fitxer de configuraicó anomenat "nomFItxer"
+ * i emplena "client" amb els clients trobats i "domini" amb el domini propi.
+ * Retorna -1 si hi ha error amb el fitxer i el codi identificatiu d'aquest en cas contrari
+ * */
+int LUMI_iniServ(const char* nomFitxer, struct Client *client, char* domini){
 
     int fid = open(nomFitxer,O_CREAT|O_TRUNC);
+    int readB;
+    char buffer[200];
+    char *next;
+    char *current;
+    if((readB=read(fid, buffer, 200))>0){
+        strncpy(buffer, domini,readB);
+        int i=0;
+        while ((readB=read(fid, buffer, 200))>0){
+           current=buffer;
+           current[readB]='\0';
+           int j=0;
+           while ((next = strchr(current, ' ')) != NULL) {
+               int cont=0;
+               switch(j){
+                   case 0: //cas del nom del client
+                       while (current[cont]!=next[0]) cont++;
+                       strncpy(client[i].nom,current,cont);
+                       break;
+                   case 1: //cas del estat del client
+                       //opcio1
+                       client[i].estat=strtol(current, (char**)NULL,10);
+                       break;
+                   case 2: //cas de la ip del client
+                       strncpy(client[j].IP,current,15);
+                       client[j].IP[15]='\0';
+                       break;
+               }
+               current = next + 1;
+               j++;
+           }
+           //tractament cas current no tractat (lultim)
+           client[i].port = strtol(current, (char**)NULL, 10);
+           i++;
+       }
+       return fid;
+    }
+    else return -1;
 
 }
 

@@ -15,16 +15,17 @@
 /* En termes de capes de l'aplicació, aquest conjunt de funcions externes */
 /* formen la interfície de la capa LUMI.                                  */
 /* Les funcions externes les heu de dissenyar vosaltres...                */
+enum Estat {DESCONNECTAT=0, LLIURE=1, OCUPAT=2};
 
 struct Client {
     char nom[20];
-    enum estat {DESCONNECTAT=0, LLIURE=1, OCUPAT=2};
     char IP[16];
+    enum Estat estat;
     int port;
 };
 
 int LUMI_crearSocket(const char *IPloc, int portUDPloc);
-int LUMI_iniServ(const char* nomFitxer, struct Client *clients);
+int LUMI_iniServ(const char* nomFitxer, struct Client *clients, char* domini);
 int LUMI_ActualitzarFitxerRegistre(const struct Client *clients, int fid);
 int LUMI_connexio(int Sck, const char *IPrem, int portUDPrem);
 int LUMI_Desregistre();              //nse els parametres, mentre vagi necessitant afegiré
