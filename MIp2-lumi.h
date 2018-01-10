@@ -28,8 +28,8 @@ int LUMI_crearSocket(const char *IPloc, int portUDPloc);
 int LUMI_iniServ(const char* nomFitxer, int * nClients,struct Client *clients, char* domini);
 int LUMI_ActualitzarFitxerRegistre(const struct Client *clients, int nClients, int fid, const char* domini);
 int LUMI_connexio(int Sck, const char *IPrem, int portUDPrem);
-int LUMI_Desregistre();              //nse els parametres, mentre vagi necessitant afegiré
-int LUMI_Registre();                 //nse els parametres, mentre vagi necessitant afegiré
+int LUMI_Desregistre(int Sck, const char * MI);
+int LUMI_Registre(int Sck, const char * MI);
 int LUMI_Localitzacio();             //nse els parametres, mentre vagi necessitant afegiré
 int LUMI_ServidorReg();              //nse els parametres, mentre vagi necessitant afegiré
 int LUMI_ServidorDesreg();           //nse els parametres, mentre vagi necessitant afegiré

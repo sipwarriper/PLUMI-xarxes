@@ -114,6 +114,10 @@ int LUMI_iniServ(const char* nomFitxer, int *nClients, struct Client *client, ch
 
 }
 
+
+/*
+ * Funció que actualitza el fitxer de configuració a fid amb l'estat actual dels clients
+ * Retorna 1   */
 int LUMI_ActualitzarFitxerRegistre(const struct Client *clients, int nClients, int fid, const char* domini){
     int writeB = write(fid, domini, strlen(domini));
     int i;
@@ -128,13 +132,30 @@ int LUMI_ActualitzarFitxerRegistre(const struct Client *clients, int nClients, i
 }
 
 
+/*
+ * Funció per demanar connexió UDP a un servidor que deixa en estat -established-
+ * Retorna -1 si hi ha error; un valor positiu qualsevol si tot va bé.    */
 int LUMI_connexio(int Sck, const char *IPrem, int portUDPrem){
     return UDP_DemanaConnexio(Sck,IPrem, portUDPrem);
 }
 
-
-int LUMI_Desregistre();              //nse els parametres, mentre vagi necessitant afegiré
-int LUMI_Registre();                 //nse els parametres, mentre vagi necessitant afegiré
+/*
+ * Funció que demana una petició de desregistre al servidor connectat a Sck de l'usuari MI
+ * Retorna -1 si hi ha error; el nombre de bytes enviats si tot va bé.    */
+int LUMI_Desregistre(int Sck, const char * MI){
+    char buffer[21];
+    int b = sprintf(buffer,"%c%s",'D', MI);
+    return UDP_Envia(Sck, buffer, b);
+}
+/*
+ * Funció que demana una petició de registre al servidor connectat a Sck de l'usuari MI
+ * Retorna -1 si hi ha error; el nombre de bytes enviats si tot va bé.    */
+int LUMI_Registre(int Sck, const char * MI){
+    char buffer[21];
+    int b = sprintf(buffer,"%c%s",'R', MI);
+    int b = sprintf(buffer,"%c%s",'R', MI);
+    return UDP_Envia(Sck, buffer, b);
+}
 int LUMI_Localitzacio();             //nse els parametres, mentre vagi necessitant afegiré
 int LUMI_ServidorReg();              //nse els parametres, mentre vagi necessitant afegiré
 int LUMI_ServidorDesreg();           //nse els parametres, mentre vagi necessitant afegiré

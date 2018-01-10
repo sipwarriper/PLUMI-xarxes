@@ -13,6 +13,8 @@
 
 
 #include "MIp2-lumi.h"
+#include <stdio.h>
+
 
 /* Definició de constants, p.e., #define MAX_LINIA 150                    */
 
@@ -27,5 +29,13 @@ int main(int argc,char *argv[])
     struct Client clients[MAXCLIENTS];
     /* Expressions, estructures de control, crides a funcions, etc.          */
     fd=LUMI_iniServ(nomFitxer,nClients,clients, domini);
-    
+    //aqui va el bucle infinit que fa tot
+    if (fd == -1){
+        perror("error obrir fitxer");
+    }
+    while(1){
+
+    }
+    return 0;
+
 }
