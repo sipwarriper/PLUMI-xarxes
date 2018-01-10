@@ -156,8 +156,36 @@ int LUMI_Registre(int Sck, const char * MI){
     return UDP_Envia(Sck, buffer, b);
 }
 int LUMI_Localitzacio();             //nse els parametres, mentre vagi necessitant afegiré
-int LUMI_ServidorReg();              //nse els parametres, mentre vagi necessitant afegiré
-int LUMI_ServidorDesreg();           //nse els parametres, mentre vagi necessitant afegiré
+int LUMI_ServidorReg( struct Client *clients, int nClients,const char *Entrada, int fid, const char* domini){
+    char nom[150];
+    strcpy(nom,&Entrada[1]);
+    int acabat =0;
+    for(int i =0;i<nClients && !acabat;i++){
+        if(strcmp(clients[i].nom,nom)==0){
+            clients[i].estat=LLIURE;
+            acabat=1;
+        }
+    }
+    if(!acabat) return 1;
+    else if(Entrada[0]!='R') return 2;
+    LUMI_ActualitzarFitxerRegistre(clients,nClients,fid,domini);
+    return 0;
+}
+int LUMI_ServidorDesreg( struct Client *clients, int nClients,const char *Entrada, int fid, const char* domini){
+    char nom[150];
+    strcpy(nom,&Entrada[1]);
+    int acabat =0;
+    for(int i =0;i<nClients && !acabat;i++){
+        if(strcmp(clients[i].nom,nom)==0){
+            clients[i].estat=DESCONNECTAT;
+            acabat=1;
+        }
+    }
+    if(!acabat) return 1;
+    else if(Entrada[0]!='D') return 2;
+    LUMI_ActualitzarFitxerRegistre(clients,nClients,fid,domini);
+    return 0;
+}
 int LUMI_ServidorLoc();              //nse els parametres, mentre vagi necessitant afegiré
 
 
