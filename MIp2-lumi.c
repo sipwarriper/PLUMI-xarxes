@@ -72,6 +72,7 @@ int LUMI_crearSocket(const char *IPloc, int portUDPloc){
 int LUMI_iniServ(const char* nomFitxer, int *nClients, struct Client *client, char* domini){
 
     int fid = open(nomFitxer,O_CREAT|O_TRUNC);
+    if (fid==-1) return -1;
     int readB;
     char buffer[200];
     char *next;
