@@ -219,6 +219,11 @@ int UDP_TancaSock(int Sck)
 /* Retorna -1 si hi ha error; un valor positiu qualsevol si tot va bé.    */
 int UDP_TrobaAdrSockLoc(int Sck, char *IPloc, int *portUDPloc)
 {
+    struct sockaddr_in peeraddr;
+    socklen_t peeraddrlen = sizeof(peeraddr);
+    getpeername(fileno(Sck), &peeraddr, &peeraddrlen);
+    inet_ntop(AF_INET, &(peeraddr.sin_addr), IPloc, INET_ADDRSTRLEN);
+    portUDPloc=ntohs(peeraddr.sin_port);
 }
 
 /* El socket UDP d’identificador “Sck” es connecta al socket UDP d’@IP    */
@@ -272,7 +277,7 @@ int UDP_Rep(int Sck, char *SeqBytes, int LongSeqBytes)
 /* Retorna -1 si hi ha error; un valor positiu qualsevol si tot va bé.    */
 int UDP_TrobaAdrSockRem(int Sck, char *IPrem, int *portUDPrem)
 {
-
+    return UDP_TrobaAdrSockLoc(Sck,IPrem,portUDPrem);
 }
 
 /* Examina simultàniament durant "Temps" (en [ms] els sockets (poden ser  */
