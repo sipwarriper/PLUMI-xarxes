@@ -23,3 +23,4 @@ int MI_EnviaLinia(int SckConvMI, const char *Linia);
 int MI_RepLinia(int SckConvMI, char *Linia);
 int MI_AcabaConv(int SckConvMI);
 int MI_AcabaEscPetiRemConv(int SckEscMI);
+int MI_Rep(int Sck, char *SeqBytes, int LongSeqBytes);

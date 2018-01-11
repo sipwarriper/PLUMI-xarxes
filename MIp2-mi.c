@@ -446,5 +446,7 @@ void InterpretarProtocol(char* tipus, int* longMiss, char* info, char* missatge)
 	//strcpy(info, missatge+4);
 	for(i=4;i<*longMiss+4;i++) info[i-4] = missatge[i];
 }
-
+int MI_Rep(int Sck, char *SeqBytes, int LongSeqBytes){
+	return TCP_Rep(Sck,SeqBytes,LongSeqBytes);
+}
 
