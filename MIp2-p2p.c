@@ -37,6 +37,7 @@ int main(int argc,char *argv[])
 	char iploc[16];
     char ipServ[16];
     char usuariMIloc[20];
+    char usuariMIrem[20];
 	char nick[16];
 	char nickRem[16];
 	char linia[300];
@@ -53,8 +54,14 @@ int main(int argc,char *argv[])
 	}
     printf("IP@port: %s@%u\n", ipMostrar,portMostrar);
     printf("Entra el teu usuari MI");
-    int bytesllegitsr=read(0,usuariMIloc,20);
-
+	scanf("%s",usuariMIloc);
+    int bytesllegitsr=strlen(usuariMIloc);
+	char nomDns[20];
+	strcpy(nomDns,usuariMIloc);
+	char *novaStrink;
+	novaStrink=strtok(nomDns,"@");
+	novaStrink=strtok(NULL,"@");
+	ResolDNSaIP(novaStrink,ipServ);
     sckUDP=LUMI_crearSocket(iploc,0);
     socUDP=LUMI_connexio(sckUDP,ipServ,1714);
 
@@ -76,19 +83,16 @@ int main(int argc,char *argv[])
 		if (sck_rep == 0) { // TECLAT
 			scanf("%i",&opcio);
 			if (opcio==0) break;
-			printf("Entra IP a la que et vols connectar:\n");
-			bytes_llegits = MI_Rep(0, iprem, sizeof(iprem));
-			printf("Entra el port al que et vols connectar:\n");
-			scanf("%i", &portrem);
-			printf("Entrar nick \n");
-			bytes_llegits = MI_Rep(0,nick,sizeof(nick));
+			printf("Entra la adreça MI a la que et vols conectar:\n");
+			scanf("%s",usuariMIrem);
+			LUMI_Localitzacio(socUDP,usuariMIloc,usuariMIrem);
 			nick[bytes_llegits-1]='\0';
 			if((scon = MI_DemanaConv(iprem, portrem, iploc,0, nick, nickRem))==-1){
 				printf("error demanaConv\n");
 				exit(-1);
 			}
 		}
-		else { // SOCKET
+		else if(sck_rep == sesc){ // SOCKET
 			printf("Entrar nick \n");
 			bytes_llegits = MI_Rep(0,nick,sizeof(nick));
 			nick[bytes_llegits-1]='\0';
@@ -96,6 +100,12 @@ int main(int argc,char *argv[])
 				printf("error acceptaConv\n");
 				exit(-1);
 			}
+		}
+		else if(sck_rep==sckUDP){
+            LUMI_RLocalitzacio(sesc,usuariMIrem,iploc,portloc,0);
+		}
+		else{
+			printf("LA HAS CAGAO LOKO \n");
 		}
 		iprem[15]='\0';
 		ipMostrar[15]='\0';
