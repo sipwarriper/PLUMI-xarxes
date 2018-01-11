@@ -83,12 +83,9 @@ int main(int argc,char *argv[])
 		if (sck_rep == 0) { // TECLAT
 			scanf("%i",&opcio);
 			if (opcio==0) break;
-			printf("Entra IP a la que et vols connectar:\n");
-			bytes_llegits = MI_Rep(0, iprem, sizeof(iprem));
-			printf("Entra el port al que et vols connectar:\n");
-			scanf("%i", &portrem);
-			printf("Entrar nick \n");
-			bytes_llegits = MI_Rep(0,nick,sizeof(nick));
+			printf("Entra la adreça MI a la que et vols conectar:\n");
+			scanf("%s",usuariMIrem);
+			LUMI_Localitzacio(socUDP,usuariMIloc,usuariMIrem);
 			nick[bytes_llegits-1]='\0';
 			if((scon = MI_DemanaConv(iprem, portrem, iploc,0, nick, nickRem))==-1){
 				printf("error demanaConv\n");
