@@ -37,6 +37,7 @@ int main(int argc,char *argv[])
 	char iploc[16];
     char ipServ[16];
     char usuariMIloc[20];
+    char usuariMIrem[20];
 	char nick[16];
 	char nickRem[16];
 	char linia[300];
@@ -104,7 +105,7 @@ int main(int argc,char *argv[])
 			}
 		}
 		else if(sck_rep==sckUDP){
-
+            LUMI_RLocalitzacio(sesc,usuariMIrem,iploc,portloc,0);
 		}
 		else{
 			printf("LA HAS CAGAO LOKO \n");
