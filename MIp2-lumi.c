@@ -141,7 +141,7 @@ int LUMI_connexio(int Sck, const char *IPrem, int portUDPrem){
 
 /*
  * Funció que demana una petició de desregistre al servidor connectat a Sck de l'usuari MI
- * Retorna -2 si no el servidor està desconectat; -1 si hi ha error; 0 si el desregistre es correcte; 1 si l'usuari no existeix; 2 si format incorrecte  */
+ * Retorna -2 si el servidor està desconectat; -1 si hi ha error; 0 si el desregistre es correcte; 1 si l'usuari no existeix; 2 si format incorrecte  */
 int LUMI_Desregistre(int Sck, const char * MI){
     char buffer[21];
     int b = sprintf(buffer,"D%s", MI);
@@ -160,7 +160,7 @@ int LUMI_Desregistre(int Sck, const char * MI){
 
 /*
  * Funció que demana una petició de registre al servidor connectat a Sck de l'usuari MI
- * Retorna -2 si no el servidor està desconectat; -1 si hi ha error; 0 si el desregistre es correcte; 1 si l'usuari no existeix; 2 si format incorrecte  */
+ * Retorna -2 si el servidor està desconectat; -1 si hi ha error; 0 si el desregistre es correcte; 1 si l'usuari no existeix; 2 si format incorrecte  */
 int LUMI_Registre(int Sck, const char * MI){
     char buffer[21];
     int b = sprintf(buffer,"R%s", MI);

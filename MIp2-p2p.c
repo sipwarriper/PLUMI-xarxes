@@ -63,7 +63,18 @@ int main(int argc,char *argv[])
 	ResolDNSaIP(novaStrink,ipServ);
     sckUDP=LUMI_crearSocket(iploc,0);
     socUDP=LUMI_connexio(sckUDP,ipServ,1714);
-	LUMI_Registre(sckUDP,usuariMIloc);
+
+    //cal fer el registre
+    int opReg;
+    if((opReg=LUMI_Registre(socUDP,usuariMIloc))==-2){
+        perror("servidor LUMI apagat\n");
+        exit(-1);
+    }
+    else if(opReg==-1) {
+        perror("error registre\n");
+        exit(-1);
+    }
+
 	while(opcio!=0){
 		printf("entra 0 per sortir, o un qualsevol per iniciar conversació, o espera connexió:\n");
 		sck_rep = MI_HaArribatPetiConv(sesc);
@@ -121,6 +132,14 @@ int main(int argc,char *argv[])
 
 	MI_AcabaEscPetiRemConv(sesc); //Tencar escolta al tencar bucle
 
+    if((opReg=LUMI_Desregistre(socUDP,usuariMIloc))==-2){
+        perror("servidor LUMI apagat\n");
+        exit(-1);
+    }
+    else if(opReg==-1) {
+        perror("error registre\n");
+        exit(-1);
+    }
 
 	return 0;
  }
