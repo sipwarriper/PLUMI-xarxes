@@ -41,7 +41,6 @@ int UDP_Envia(int Sck, const char *SeqBytes, int LongSeqBytes);
 int UDP_Rep(int Sck, char *SeqBytes, int LongSeqBytes);
 int UDP_TrobaAdrSockRem(int Sck, char *IPrem, int *portUDPrem);
 int HaArribatAlgunaCosaEnTemps(const int *LlistaSck, int LongLlistaSck, int Temps);
-int ResolDNSaIP(const char *NomDNS, char *IP);
 int Log_CreaFitx(const char *NomFitxLog);
 int Log_Escriu(int FitxLog, const char *MissLog);
 int Log_TancaFitx(int FitxLog);

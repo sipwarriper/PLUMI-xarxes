@@ -25,6 +25,7 @@ struct Client {
     int port;
 };
 
+int ResolDNSaIP(const char *NomDNS, char *IP);
 int LUMI_crearSocket(const char *IPloc, int portUDPloc);
 int LUMI_iniServ(const char* nomFitxer, int * nClients,struct Client *clients, char* domini);
 int LUMI_ActualitzarFitxerRegistre(const struct Client *clients, int nClients, int fid, const char* domini);

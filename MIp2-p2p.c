@@ -12,6 +12,7 @@
 /* Inclusió de llibreries, p.e. #include <stdio.h> o #include "meu.h"     */
 /* Incloem "MIp1v4-mi.h" per poder fer crides a la interfície de MI       */
 #include "MIp2-mi.h"
+#include "MIp2-lumi.h"
 #include <string.h>
 #include <stdio.h>
 #include <errno.h>
@@ -34,11 +35,14 @@ int main(int argc,char *argv[])
 	int portloc, sesc, sck_rep, portrem, scon, bytes_llegits, bytes_escrits,sckRep_Conv;
 	char iprem[16];
 	char iploc[16];
+    char ipServ[16];
+    char usuariMIloc[20];
 	char nick[16];
 	char nickRem[16];
 	char linia[300];
 	char buffer[304];
 	int opcio=1;
+    int sckUDP, socUDP;
  /* Declaració de variables, p.e., int n;                                 */
 	strcpy(iploc, "0.0.0.0");
 	char ipMostrar[16];
@@ -48,6 +52,11 @@ int main(int argc,char *argv[])
 		exit(-1);
 	}
     printf("IP@port: %s@%u\n", ipMostrar,portMostrar);
+    printf("Entra el teu usuari MI");
+    int bytesllegitsr=read(0,usuariMIloc,20);
+
+    sckUDP=LUMI_crearSocket(iploc,0);
+    socUDP=LUMI_connexio(sckUDP,ipServ,1714);
 
 	while(opcio!=0){
 		printf("entra 0 per sortir, o un qualsevol per iniciar conversació, o espera connexió:\n");
