@@ -19,6 +19,7 @@
 /* Definició de constants, p.e., #define MAX_LINIA 150                    */
 
 #define MAXCLIENTS 10
+#define MAXMISSATGE 200
 
 int main(int argc,char *argv[])
 {
@@ -26,16 +27,40 @@ int main(int argc,char *argv[])
     int fd, nClients;
     char * nomFitxer= "MIp2-nodelumi.cfg";
     char domini[30];
+    char IPloc[16];
     struct Client clients[MAXCLIENTS];
+    int socket;
     /* Expressions, estructures de control, crides a funcions, etc.          */
     fd=LUMI_iniServ(nomFitxer,nClients,clients, domini);
-    //aqui va el bucle infinit que fa tot
     if (fd == -1){
         perror("error obrir fitxer");
     }
+    socket = LUMI_crearSocket(IPloc,1714);
+    int resposta;
     while(1){
-
+        resposta=LUMI_EsperaMissatge(socket);
+        if(resposta!=-1){
+            char missatge[MAXMISSATGE];
+            int portClient;
+            char ipClient[16];
+            int longitud=LUMI_RepDe(socket,ipClient,portClient,missatge,MAXMISSATGE);
+            switch(LUMI_ServDescxifrarRebut(missatge)){
+                case REGISTRE:{
+                    LUMI_ServidorReg(clients,nClients,missatge,ipClient,portClient,fd,domini,socket);
+                    break;
+                }
+                case DESREGISTRE:{
+                    LUMI_ServidorDesreg(clients,nClients,missatge,ipClient,portClient,fd,domini,socket);
+                    break;
+                }
+                case LOCALITZACIO:{
+                    LUMI_ServidorLoc(socket,missatge,longitud,domini,clients,nClients);
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
     }
     return 0;
-
 }
