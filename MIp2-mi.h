@@ -3,7 +3,7 @@
 /* P1 - MI amb sockets TCP/IP - Part I                                    */
 /* Fitxer capçalera de mi.c                                               */
 /*                                                                        */
-/* Autors: X, Y                                                           */
+/* Autors: Lluís Trilla, Ismael El Habri                                  */
 /*                                                                        */
 /**************************************************************************/
 
