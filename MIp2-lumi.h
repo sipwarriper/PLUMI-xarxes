@@ -16,6 +16,7 @@
 /* formen la interfície de la capa LUMI.                                  */
 /* Les funcions externes les heu de dissenyar vosaltres...                */
 enum Estat {DESCONNECTAT=0, LLIURE=1, OCUPAT=2};
+enum TipusMissatge {REGISTRE,DESREGISTRE,LOCALITZACIO,ACK,RESPOSTALOC};
 
 struct Client {
     char nom[20];
@@ -38,4 +39,7 @@ int LUMI_ServidorDesreg( struct Client *clients, int nClients,const char *Entrad
 int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dominiloc, struct Client *clients, int nClients);
 int LUMI_ServidorRLoc(int Sck, char * missatge, int longMissatge, const char* dominiloc, struct Client *clients, int nClients);
 
+int LUMI_EsperaMissatge(int sock);
+int LUMI_Rep(int Sck, char *SeqBytes, int LongSeqBytes);
+int LUMI_RepDe(int Sck, char *IPrem, int *portUDPrem, char *SeqBytes, int LongSeqBytes);
 

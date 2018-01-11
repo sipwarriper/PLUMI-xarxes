@@ -207,10 +207,10 @@ int LUMI_RLocalitzacio(int Sck, const char *MIrem, const char* IP, int portTCP, 
  * Retorna -1 si no coneix la petició; 0 si és desregistre, 1 si és Registre, 2 si es localització i 3 si es resposta a Localització */
 int LUMI_ServDescxifrarRebut(const char* missatge) {
     char a = missatge[0];
-    if(a=='D') return 0;
-    else if(a=='R') return 1;
-    else if(a=='L') return 2;
-    else if(a=='B') return 3;
+    if(a=='D') return DESREGISTRE;
+    else if(a=='R') return REGISTRE;
+    else if(a=='L') return LOCALITZACIO;
+    else if(a=='B') return RESPOSTALOC;
     else return -1;
 }
 /*
@@ -570,3 +570,21 @@ int Log_TancaFitx(int FitxLog)
 /* Si ho creieu convenient, feu altres funcions...                        */
 
 
+int LUMI_EsperaMissatge(int socket) {
+    //preguntar si inclou teclat i pantalla a LlistaSck
+    fd_set conjunt;
+    FD_ZERO(&conjunt);
+    int i, descmax = 0;
+    FD_SET(socket, &conjunt);
+    if (socket > descmax) descmax = socket;
+    if (select(descmax + 1, &conjunt, NULL, NULL, NULL) == -1) return -1;
+    //si sha de comprovar tb el teclat mirar primer desde aqui
+    FD_ISSET(socket, &conjunt);
+    return socket;
+}
+int LUMI_Rep(int Sck, char *SeqBytes, int LongSeqBytes){
+    return UDP_Rep(Sck,SeqBytes,LongSeqBytes);
+}
+int LUMI_RepDe(int Sck, char *IPrem, int *portUDPrem, char *SeqBytes, int LongSeqBytes){
+    return UDP_RepDe(Sck,IPrem,portUDPrem,SeqBytes,LongSeqBytes);
+}
