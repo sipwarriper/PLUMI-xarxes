@@ -277,8 +277,10 @@ int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dom
         //buscar als clients
         int trobat=0, cont=0;
         while(trobat==0 && cont<nClients){
-            if(strcpy(nom,clients))
+            if(strcpy(nom,clients[cont].nom)==0) trobat = 1;
+            else cont++;
         }
+        UDP_EnviaA(Sck, clients[cont].IP,clients[cont].port,missatge,longMissatge);
     }
     else {
         //resoldre domini i repetir resposta
