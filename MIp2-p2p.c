@@ -53,11 +53,17 @@ int main(int argc,char *argv[])
 	}
     printf("IP@port: %s@%u\n", ipMostrar,portMostrar);
     printf("Entra el teu usuari MI");
-    int bytesllegitsr=read(0,usuariMIloc,20);
-
+	scanf("%s",usuariMIloc);
+    int bytesllegitsr=strlen(usuariMIloc);
+	char nomDns[20];
+	strcpy(nomDns,usuariMIloc);
+	char *novaStrink;
+	novaStrink=strtok(nomDns,"@");
+	novaStrink=strtok(NULL,"@");
+	ResolDNSaIP(novaStrink,ipServ);
     sckUDP=LUMI_crearSocket(iploc,0);
     socUDP=LUMI_connexio(sckUDP,ipServ,1714);
-
+	LUMI_Registre(sckUDP,usuariMIloc);
 	while(opcio!=0){
 		printf("entra 0 per sortir, o un qualsevol per iniciar conversació, o espera connexió:\n");
 		sck_rep = MI_HaArribatPetiConv(sesc);
@@ -77,7 +83,7 @@ int main(int argc,char *argv[])
 				exit(-1);
 			}
 		}
-		else { // SOCKET
+		else if(sck_rep == sesc){ // SOCKET
 			printf("Entrar nick \n");
 			bytes_llegits = MI_Rep(0,nick,sizeof(nick));
 			nick[bytes_llegits-1]='\0';
@@ -85,6 +91,12 @@ int main(int argc,char *argv[])
 				printf("error acceptaConv\n");
 				exit(-1);
 			}
+		}
+		else if(sck_rep==sckUDP){
+
+		}
+		else{
+			printf("LA HAS CAGAO LOKO \n");
 		}
 		iprem[15]='\0';
 		ipMostrar[15]='\0';
