@@ -48,6 +48,7 @@ int main(int argc,char *argv[])
 		exit(-1);
 	}
     printf("IP@port: %s@%u\n", ipMostrar,portMostrar);
+
 	while(opcio!=0){
 		printf("entra 0 per sortir, o un qualsevol per iniciar conversació, o espera connexió:\n");
 		sck_rep = MI_HaArribatPetiConv(sesc);
