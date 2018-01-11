@@ -56,11 +56,11 @@ int main(int argc,char *argv[])
 			scanf("%i",&opcio);
 			if (opcio==0) break;
 			printf("Entra IP a la que et vols connectar:\n");
-			bytes_llegits = TCP_Rep(0, iprem, sizeof(iprem));
+			bytes_llegits = MI_Rep(0, iprem, sizeof(iprem));
 			printf("Entra el port al que et vols connectar:\n");
 			scanf("%i", &portrem);
 			printf("Entrar nick \n");
-			bytes_llegits = TCP_Rep(0,nick,sizeof(nick));
+			bytes_llegits = MI_Rep(0,nick,sizeof(nick));
 			nick[bytes_llegits-1]='\0';
 			if((scon = MI_DemanaConv(iprem, portrem, iploc,0, nick, nickRem))==-1){
 				printf("error demanaConv\n");
@@ -69,7 +69,7 @@ int main(int argc,char *argv[])
 		}
 		else { // SOCKET
 			printf("Entrar nick \n");
-			bytes_llegits = TCP_Rep(0,nick,sizeof(nick));
+			bytes_llegits = MI_Rep(0,nick,sizeof(nick));
 			nick[bytes_llegits-1]='\0';
 			if ((scon=MI_AcceptaConv(sesc, iprem, &portrem, iploc, portloc, nick, nickRem))==-1){
 				printf("error acceptaConv\n");
