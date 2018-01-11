@@ -57,6 +57,10 @@ int main(int argc,char *argv[])
                     LUMI_ServidorLoc(socket,missatge,longitud,domini,clients,nClients);
                     break;
                 }
+                case RESPOSTALOC:{
+                    LUMI_ServidorRLoc(socket,missatge,longitud,domini,clients,nClients);
+                    break
+                }
                 default:
                     break;
             }
