@@ -11,7 +11,7 @@
 
 /* Inclusió de llibreries, p.e. #include <stdio.h> o #include "meu.h"     */
 /* Incloem "MIp1v4-mi.h" per poder fer crides a la interfície de MI       */
-#include "MIp1-mi.h"
+#include "MIp2-mi.h"
 #include <string.h>
 #include <stdio.h>
 #include <errno.h>

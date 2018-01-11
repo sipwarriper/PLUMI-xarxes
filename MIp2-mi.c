@@ -10,7 +10,7 @@
 /* Inclusió de llibreries, p.e. #include <sys/types.h> o #include "meu.h" */
 /*  (si les funcions externes es cridessin entre elles, faria falta fer   */
 /*   un #include "MIp1v4-mi.h")                                           */
-#include "MIp1-mi.h"
+#include "MIp2-mi.h"
 #include <string.h>
 #include <stdio.h> 
 #include <errno.h>
