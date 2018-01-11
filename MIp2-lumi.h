@@ -31,6 +31,7 @@ int LUMI_connexio(int Sck, const char *IPrem, int portUDPrem);
 int LUMI_Desregistre(int Sck, const char * MI);
 int LUMI_Registre(int Sck, const char * MI);
 int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem);
+int LUMI_RLocalitzacio(int Sck, const char *MIrem, const char* IP, int portTCP, int estat);
 int LUMI_ServDescxifrarRebut(const char* missatge);
 int LUMI_ServidorReg(struct Client *clients, int nClients,const char *Entrada,const char *IP, int port, int fid, const char* domini, int socket);
 int LUMI_ServidorDesreg( struct Client *clients, int nClients,const char *Entrada,const char *IP, int port, int fid, const char* domini, int socket);
