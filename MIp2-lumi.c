@@ -280,7 +280,7 @@ int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dom
             if(strcpy(nom,clients[cont].nom)==0) trobat = 1;
             else cont++;
         }
-        UDP_EnviaA(Sck, clients[cont].IP,clients[cont].port,missatge,longMissatge);
+        if(UDP_EnviaA(Sck, clients[cont].IP,clients[cont].port,missatge,longMissatge)==-1) return -1;
     }
     else {
         //resoldre domini i repetir resposta
@@ -291,7 +291,37 @@ int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dom
     return 1;
 }
 
-int LUMI_ServidorRLoc();             //nse els parametres, mentre vagi necessitant afegiré
+int LUMI_ServidorRLoc(int Sck, char * missatge, int longMissatge, const char* dominiloc, struct Client *clients, int nClients){
+    int i=2, j=0;
+    char domini[20];
+    while(missatge[i]!='@') i++;
+    while(missatge[i]!='/'){
+        domini[j] = missatge[i];
+        i++;
+        j++;
+    }
+    domini[j]='\0';
+    if(strcmp(domini, dominiloc)==0){
+        //domini propi, has de buscar el client i enviarli la solicitud!
+        char nom[50];
+        for(j=2;j<i;j++) nom[j-2]=missatge[j];
+        nom[j]='\0';
+        //buscar als clients
+        int trobat=0, cont=0;
+        while(trobat==0 && cont<nClients){
+            if(strcpy(nom,clients[cont].nom)==0) trobat = 1;
+            else cont++;
+        }
+        if(UDP_EnviaA(Sck, clients[cont].IP,clients[cont].port,missatge,longMissatge)==-1) return -1;
+    }
+    else {
+        //resoldre domini i repetir resposta
+        char IP[16];
+        ResolDNSaIP(domini, IP);
+        if (UDP_EnviaA(Sck,IP,1714,missatge,longMissatge)==-1) return -1;
+    }
+    return 1;
+}
 
 /* Definicio de funcions INTERNES, és a dir, d'aquelles que es faran      */
 /* servir només en aquest mateix fitxer.                                  */
