@@ -177,8 +177,8 @@ int LUMI_Registre(int Sck, const char * MI){
     return ((int)buffer[1]-48);
 }
 
-int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem){
-    char buffer[40];
+int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem, char * IP, int * portTCP){
+    char buffer[60];
     int b = sprintf(buffer,"L%s/%s",MIloc, MIrem);
     int x, i=0;
     if((x = UDP_Envia(Sck, buffer, b))==-1) return -1;
@@ -189,8 +189,23 @@ int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem){
         if((x = UDP_Envia(Sck, buffer, b))==-1) return -1;
     }
     if (x==-2) return -2;
-    x = UDP_Rep(Sck, buffer,21);
-    return ((int)buffer[1]-48);
+    x = UDP_Rep(Sck, buffer,60);
+    int z=strlen(MIloc)+3; //posicio on comença el port
+    char portTemp[6];
+    while (buffer[z] != '/'){
+        portTemp[z-strlen(MIloc)+3]=buffer[z];
+        z++;
+    }
+    *portTCP = strtol(portTemp, (char **) NULL, 10);
+    z++; //(el '/')
+    x = z;
+    while(buffer[z] != '/'){
+        IP[z-x]=buffer[z];
+        z++;
+    }
+    IP[z]='\0';
+    return ((int)buffer[1]-48); //retorna el codi de resposta!
+
 
 }
 
