@@ -6,7 +6,8 @@
 /* Autors: Ismael El Habri, Lluís Trilla                                                           */
 /*                                                                        */
 /**************************************************************************/
-
+#ifndef LMAO
+#define LMAO
 
 /* Declaració de funcions externes de lumi.c, és a dir, d'aquelles que es */
 /* faran servir en un altre fitxer extern, p.e., MIp2-p2p.c,              */
@@ -28,19 +29,19 @@ struct Client {
 int ResolDNSaIP(const char *NomDNS, char *IP);
 int LUMI_crearSocket(const char *IPloc, int portUDPloc);
 int LUMI_iniServ(const char* nomFitxer, int * nClients,struct Client *clients, char* domini);
-int LUMI_ActualitzarFitxerRegistre(const struct Client *clients, int nClients, int fid, const char* domini);
+int LUMI_ActualitzarFitxerRegistre(const struct Client *clients, int nClients, const char *nomFitxer, const char* domini);
 int LUMI_connexio(int Sck, const char *IPrem, int portUDPrem);
 int LUMI_Desregistre(int Sck, const char * MI);
 int LUMI_Registre(int Sck, const char * MI);
-int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem);
+int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem, char * IP, int * portTCP);
 int LUMI_RLocalitzacio(int Sck, const char *MIrem, const char* IP, int portTCP, int estat);
 int LUMI_ServDescxifrarRebut(const char* missatge);
-int LUMI_ServidorReg(struct Client *clients, int nClients,const char *Entrada,const char *IP, int port, int fid, const char* domini, int socket);
-int LUMI_ServidorDesreg( struct Client *clients, int nClients,const char *Entrada,const char *IP, int port, int fid, const char* domini, int socket);
+int LUMI_ServidorReg(struct Client *clients, int nClients,const char *Entrada,const char *IP, int port, const char *nomFitxer, const char* domini, int socket);
+int LUMI_ServidorDesreg( struct Client *clients, int nClients,const char *Entrada,const char *IP, int port, const char *nomFitxer, const char* domini, int socket);
 int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dominiloc, struct Client *clients, int nClients);
 int LUMI_ServidorRLoc(int Sck, char * missatge, int longMissatge, const char* dominiloc, struct Client *clients, int nClients);
 
 int LUMI_EsperaMissatge(int sock);
 int LUMI_Rep(int Sck, char *SeqBytes, int LongSeqBytes);
 int LUMI_RepDe(int Sck, char *IPrem, int *portUDPrem, char *SeqBytes, int LongSeqBytes);
-
+#endif
