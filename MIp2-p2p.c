@@ -62,12 +62,17 @@ int main(int argc,char *argv[])
 	novaStrink=strtok(nomDns,"@");
 	novaStrink=strtok(NULL,"@");
 	ResolDNSaIP(novaStrink,ipServ);
+	printf("%s\n",ipServ);
     sckUDP=LUMI_crearSocket(iploc,0);
     socUDP=LUMI_connexio(sckUDP,ipServ,1714);
-
+	printf("%d\n",sckUDP);
+	if(socUDP==-1||sckUDP==-1){
+		printf("Error amb els sockets udp");
+		return -1;
+	}
     //cal fer el registre
     int opReg;
-    if((opReg=LUMI_Registre(socUDP,usuariMIloc))==-2){
+    if((opReg=LUMI_Registre(sckUDP,usuariMIloc))==-2){
         perror("servidor LUMI apagat\n");
         exit(-1);
     }
@@ -85,7 +90,7 @@ int main(int argc,char *argv[])
 			if (opcio==0) break;
 			printf("Entra la adreça MI a la que et vols conectar:\n");
 			scanf("%s",usuariMIrem);
-			LUMI_Localitzacio(socUDP,usuariMIloc,usuariMIrem,iprem, &portrem);
+			LUMI_Localitzacio(sckUDP,usuariMIloc,usuariMIrem,iprem, &portrem);
 			nick[bytes_llegits-1]='\0';
 			if((scon = MI_DemanaConv(iprem, portrem, iploc,0, nick, nickRem))==-1){
 				printf("error demanaConv\n");
@@ -102,7 +107,7 @@ int main(int argc,char *argv[])
 			}
 		}
 		else if(sck_rep==sckUDP){
-            LUMI_RLocalitzacio(sesc,usuariMIrem,iploc,portloc,0);
+            LUMI_RLocalitzacio(sckUDP,usuariMIrem,iploc,portloc,0);
 		}
 		else{
 			printf("LA HAS CAGAO LOKO \n");
@@ -130,7 +135,7 @@ int main(int argc,char *argv[])
 
 	MI_AcabaEscPetiRemConv(sesc); //Tencar escolta al tencar bucle
 
-    if((opReg=LUMI_Desregistre(socUDP,usuariMIloc))==-2){
+    if((opReg=LUMI_Desregistre(sckUDP,usuariMIloc))==-2){
         perror("servidor LUMI apagat\n");
         exit(-1);
     }

@@ -13,6 +13,7 @@
 /*   un #include "MIp2-lumi.h")                                           */
 
 #include <string.h>
+#include <sys/select.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -63,14 +64,14 @@ int LUMI_crearSocket(const char *IPloc, int portUDPloc){
     return UDP_CreaSock(IPloc, portUDPloc);
 }
 
-/* Funció que inicialitza el servidor LUMI amb la informació trobada al fitxer de configuraicó anomenat "nomFItxer"
+/* Funció que inicialitza el servidor LUMI amb la informació trobada al fitxer de configuraicó anomenat "nomFitxer"
  * i emplena "client" amb els clients trobats i "domini" amb el domini propi. A nClients fica el numero de clients que
  * ha trobat.
  * Retorna -1 si hi ha error amb el fitxer i el codi identificatiu d'aquest en cas contrari
  * */
 int LUMI_iniServ(const char* nomFitxer, int *nClients, struct Client *client, char* domini){
 
-    int fid = open(nomFitxer,O_CREAT|O_TRUNC);
+    int fid = open(nomFitxer,O_RDONLY);
     if (fid==-1) return -1;
     int readB;
     char buffer[200];
@@ -103,11 +104,13 @@ int LUMI_iniServ(const char* nomFitxer, int *nClients, struct Client *client, ch
                 current = next + 1;
                 j++;
             }
+			printf("SOMAQUI\n");
             //tractament cas current no tractat (lultim)
             client[i].port = strtol(current, (char **) NULL, 10);
             i++;
         }
         *nClients=i;
+		close(fid);
        return fid;
     }
     else return -1;
@@ -118,16 +121,18 @@ int LUMI_iniServ(const char* nomFitxer, int *nClients, struct Client *client, ch
 /*
  * Funció que actualitza el fitxer de configuració a fid amb l'estat actual dels clients
  * Retorna 1   */
-int LUMI_ActualitzarFitxerRegistre(const struct Client *clients, int nClients, int fid, const char* domini){
-    int writeB = write(fid, domini, strlen(domini));
+int LUMI_ActualitzarFitxerRegistre(const struct Client *clients, int nClients, const char *nomFitxer, const char* domini){
+    int fid = open(nomFitxer, O_CREAT|O_TRUNC|O_WRONLY);
+	int writeB = write(fid, domini, strlen(domini));
     int i;
     int a;
     char buffer[200];
-    for (i=0; i<nClients; i++){
+	for (i=0; i<nClients; i++){
         a = sprintf(buffer,"\n%s %d %s %d",clients[i].nom,clients[i].estat, clients[i].IP, clients[i].port);
         writeB = write(fid, buffer, a);
         i++;
     }
+	close(fid);
     return 1;
 }
 
@@ -165,15 +170,16 @@ int LUMI_Registre(int Sck, const char * MI){
     char buffer[21];
     int b = sprintf(buffer,"R%s", MI);
     int x, i=0;
-    if((x = UDP_Envia(Sck, buffer, b))==-1) return -1;
+    if((x = UDP_Envia(Sck, buffer, b))==-1) {printf("AYY\n");return -1;}
     int a[0];
     a[0]=Sck;
     while((x = HaArribatAlgunaCosaEnTemps(a,1,2000))==-2 && i<5){
         i++;
-        if((x = UDP_Envia(Sck, buffer, b))==-1) return -1;
+        if((x = UDP_Envia(Sck, buffer, b))==-1) {printf("LMAO\n");return -1;}
     }
     if (x==-2) return -2;
     x = UDP_Rep(Sck, buffer,21);
+	printf("%d",((int)buffer[1]-48));
     return ((int)buffer[1]-48);
 }
 
@@ -230,9 +236,9 @@ int LUMI_ServDescxifrarRebut(const char* missatge) {
 /*
  * Funció que fa el registre d'un client al servidor, i envia la resposta adient al socket inicial, també actualitza el arxiu de clients
  * */
-int LUMI_ServidorReg(struct Client *clients, int nClients,const char *Entrada,  const char *IP, int port, int fid,const char* domini, int socket) {
+int LUMI_ServidorReg(struct Client *clients, int nClients,const char *Entrada,  const char *IP, int port, const char *nomFitxer,const char* domini, int socket) {
     if (Entrada[0] != 'R') {
-        UDP_EnviaA(socket, IP, port, "2", 2);
+        UDP_EnviaA(socket, IP, port, "A2", 2);
         return 2;
     }
     char nom[150];
@@ -247,20 +253,20 @@ int LUMI_ServidorReg(struct Client *clients, int nClients,const char *Entrada,  
         }
     }
     if(!acabat) {
-        UDP_EnviaA(socket,IP,port,"1",2);
+        UDP_EnviaA(socket,IP,port,"A1",2);
         return 1;
     }
-    LUMI_ActualitzarFitxerRegistre(clients,nClients,fid,domini);
-    UDP_EnviaA(socket,IP,port,"0",2);
+    LUMI_ActualitzarFitxerRegistre(clients,nClients,nomFitxer,domini);
+    UDP_EnviaA(socket,IP,port,"A0",2);
     return 0;
 }
 
 /*
  * Funció que fa el desregistre d'un client al servidor, i envia la resposta adient al socket inicial, també actualitza el arxiu de clients
  * */
-int LUMI_ServidorDesreg(struct Client *clients, int nClients,const char *Entrada, const char *IP, int port, int fid, const char* domini, int socket){
+int LUMI_ServidorDesreg(struct Client *clients, int nClients,const char *Entrada, const char *IP, int port,const char *nomFitxer , const char* domini, int socket){
     if(Entrada[0]!='D'){
-        UDP_EnviaA(socket, IP, port, "2", 2);
+        UDP_EnviaA(socket, IP, port, "A2", 2);
         return 2;
     }
     char nom[150];
@@ -273,11 +279,11 @@ int LUMI_ServidorDesreg(struct Client *clients, int nClients,const char *Entrada
         }
     }
     if(!acabat) {
-        UDP_EnviaA(socket,IP,port,"0",2);
+        UDP_EnviaA(socket,IP,port,"A0",2);
         return 1;
     }
-    LUMI_ActualitzarFitxerRegistre(clients,nClients,fid,domini);
-    UDP_EnviaA(socket,IP,port,"0",2);
+    LUMI_ActualitzarFitxerRegistre(clients,nClients,nomFitxer,domini);
+    UDP_EnviaA(socket,IP,port,"A0",2);
     return 0;
 }
 int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dominiloc, struct Client *clients, int nClients){

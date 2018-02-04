@@ -14,43 +14,44 @@
 
 #include "MIp2-lumi.h"
 #include <stdio.h>
+#include <string.h>
 
 
 /* Definició de constants, p.e., #define MAX_LINIA 150                    */
 
 #define MAXCLIENTS 10
 #define MAXMISSATGE 200
-
 int main(int argc,char *argv[])
 {
     /* Declaració de variables, p.e., int n;                                 */
-    int fd, nClients;
+    int nClients;
     char * nomFitxer= "MIp2-nodelumi.cfg";
     char domini[30];
     char IPloc[16];
     struct Client clients[MAXCLIENTS];
     int socket;
     /* Expressions, estructures de control, crides a funcions, etc.          */
-    fd=LUMI_iniServ(nomFitxer,nClients,clients, domini);
-    if (fd == -1){
+    if (LUMI_iniServ(nomFitxer,&nClients,clients, domini) == -1){
         perror("error obrir fitxer");
     }
+	strcpy(IPloc, "0.0.0.0");
     socket = LUMI_crearSocket(IPloc,1714);
     int resposta;
     while(1){
         resposta=LUMI_EsperaMissatge(socket);
         if(resposta!=-1){
+			printf("HE REBUT ALGO!!!!!!!!!! |n");
             char missatge[MAXMISSATGE];
             int portClient;
             char ipClient[16];
-            int longitud=LUMI_RepDe(socket,ipClient,portClient,missatge,MAXMISSATGE);
+            int longitud=LUMI_RepDe(socket,ipClient,&portClient,missatge,MAXMISSATGE);
             switch(LUMI_ServDescxifrarRebut(missatge)){
                 case REGISTRE:{
-                    LUMI_ServidorReg(clients,nClients,missatge,ipClient,portClient,fd,domini,socket);
+                    LUMI_ServidorReg(clients,nClients,missatge,ipClient,portClient,nomFitxer,domini,socket);
                     break;
                 }
                 case DESREGISTRE:{
-                    LUMI_ServidorDesreg(clients,nClients,missatge,ipClient,portClient,fd,domini,socket);
+                    LUMI_ServidorDesreg(clients,nClients,missatge,ipClient,portClient,nomFitxer,domini,socket);
                     break;
                 }
                 case LOCALITZACIO:{
