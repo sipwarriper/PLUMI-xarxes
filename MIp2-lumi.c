@@ -85,53 +85,8 @@ int LUMI_iniServ(const char* nomFitxer, int *nClients, struct Client *client, ch
         //haig de tractar el salt de linia?
     }
     *nClients = count;
+    fclose(fid);
     return 0;
-
-    /*int fid = open(nomFitxer,O_RDONLY);
-    if (fid==-1) return -1;
-    int readB;
-    char buffer[200];
-    char *next;
-    char *current;
-    if((readB=read(fid, buffer, 200))>0){
-        buffer[readB] = '\0';
-        strncpy(buffer, domini,readB+1);
-        int i=0;
-        while ((readB=read(fid, buffer, 200))>0) {
-            current = buffer;
-            current[readB] = '\0';
-            int j = 0;
-            while ((next = strchr(current, ' ')) != NULL) {
-                int cont = 0;
-                switch (j) {
-                    case 0: //cas del nom del client
-                        while (current[cont] != ' ') cont++;
-                        strncpy(client[i].nom, current, cont);
-                        break;
-                    case 1: //cas del estat del client
-                        //opcio1
-                        client[i].estat = strtol(current, (char **) NULL, 10);
-                        break;
-                    case 2: //cas de la ip del client
-                        while (current[cont] != ' ') cont++;
-                        strncpy(client[j].IP, current, cont);
-                        client[j].IP[15] = '\0';
-                        break;
-                }
-                current = next + 1;
-                j++;
-            }
-			printf("SOMAQUI\n");
-            //tractament cas current no tractat (lultim)
-            client[i].port = strtol(current, (char **) NULL, 10);
-            i++;
-        }
-        *nClients=i;
-		close(fid);
-       return fid;
-    }
-    else return -1;
-*/
 }
 
 
