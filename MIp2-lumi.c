@@ -534,17 +534,17 @@ int HaArribatAlgunaCosaEnTemps(const int *LlistaSck, int LongLlistaSck, int Temp
     fd_set conjunt;
     FD_ZERO(&conjunt);
     int i, descmax = 0;
-    struct timeval *t;
+    struct timeval t;
     //FD_SET(0,&conjunt); //afegim el teclat si cal
     for (i = 0; i<LongLlistaSck; i++) {
         FD_SET(LlistaSck[i], &conjunt);
         if (LlistaSck[i] > descmax) descmax = LlistaSck[i];
     }
-    if (Temps==-1) t = NULL;
+    if (Temps==-1) if (select(descmax + 1, &conjunt, NULL, NULL, NULL) == -1) return -1;
     else{
-        t->tv_usec=Temps*1000;
+        t.tv_usec=Temps*1000;
+        if (select(descmax + 1, &conjunt, NULL, NULL, &t) == -1) return -1;
     }
-    if (select(descmax + 1, &conjunt, NULL, NULL, t) == -1) return -1;
     //si sha de comprovar tb el teclat mirar primer desde aqui
     for (i = 0; i<LongLlistaSck; i++) if (FD_ISSET(LlistaSck[i], &conjunt)) break;
     if (i<LongLlistaSck) return LlistaSck[i];
@@ -559,8 +559,8 @@ int HaArribatAlgunaCosaEnTemps(const int *LlistaSck, int LongLlistaSck, int Temp
 /* Retorna -1 si hi ha error; un valor positiu qualsevol si tot va bé     */
 int ResolDNSaIP(const char *NomDNS, char *IP)
 {
-    struct hostent *dadesHOST; //copipaste del pdf
-    struct in_addr adrHOST;    //copipaste del pdf
+    struct hostent *dadesHOST;
+    struct in_addr adrHOST;
     dadesHOST = gethostbyname(NomDNS);
     if (dadesHOST==NULL) return -1;
     adrHOST.s_addr = *((unsigned long *)dadesHOST->h_addr_list[0]);

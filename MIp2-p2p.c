@@ -46,14 +46,12 @@ int main(int argc,char *argv[])
     int sckUDP, socUDP;
  /* Declaració de variables, p.e., int n;                                 */
 	strcpy(iploc, "0.0.0.0");
-	char ipMostrar[16];
-	int portMostrar;
-	if ((sesc = MI_IniciaEscPetiRemConv(0,&portMostrar, ipMostrar)) == -1) {
+	if ((sesc = MI_IniciaEscPetiRemConv(0,&portloc, iploc)) == -1) {
 		perror("socket\n");
 		exit(-1);
 	}
-    printf("IP@port: %s@%u\n", ipMostrar,portMostrar);
-    printf("Entra el teu usuari MI");
+    printf("IP@port: %s@%u\n", iploc,portloc);
+    printf("Entra el teu usuari MI\n");
 	scanf("%s",usuariMIloc);
     int bytesllegitsr=strlen(usuariMIloc);
 	char nomDns[20];
@@ -61,7 +59,10 @@ int main(int argc,char *argv[])
 	char *novaStrink;
 	novaStrink=strtok(nomDns,"@");
 	novaStrink=strtok(NULL,"@");
-	ResolDNSaIP(novaStrink,ipServ);
+	if (ResolDNSaIP(novaStrink,ipServ)==-1){
+		perror("error al resoldre DNS\n");
+		exit(1);
+	}
 	printf("%s\n",ipServ);
     sckUDP=LUMI_crearSocket(iploc,0);
     socUDP=LUMI_connexio(sckUDP,ipServ,1714);
@@ -113,7 +114,7 @@ int main(int argc,char *argv[])
 			printf("LA HAS CAGAO LOKO \n");
 		}
 		iprem[15]='\0';
-		ipMostrar[15]='\0';
+		iploc[15]='\0';
 		//printf("Local IP@port: %s@%u\n", ipMostrar,portMostrar);
 		printf("Remot IP@port: %s@%u\n", iprem,portrem);
 		printf("conversi\n");
