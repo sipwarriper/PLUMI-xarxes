@@ -44,8 +44,8 @@ int main(int argc,char *argv[])
 	int opcio=1;
     int sckUDP, socUDP;
  /* Declaració de variables, p.e., int n;                                 */
-	/*burrar i aplicar lo de sota abans dentregar, aixo es per debbugejar*/strcpy(iploc, "192.168.1.42");
-	//strcpy(iploc, "0.0.0.0");
+	///*burrar i aplicar lo de sota abans dentregar, aixo es per debbugejar*/strcpy(iploc, "192.168.1.42");
+	strcpy(iploc, "0.0.0.0");
 	if ((sesc = MI_IniciaEscPetiRemConv(0,&portloc, iploc)) == -1) {
 		perror("socket\n");
 		exit(-1);

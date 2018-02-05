@@ -34,8 +34,8 @@ int main(int argc,char *argv[])
     if (LUMI_iniServ(nomFitxer,&nClients,clients, domini) == -1){
         perror("error obrir fitxer");
     }
-    /*burrar i aplicar lo de sota abans dentregar, aixo es per debbugejar*/strcpy(IPloc, "192.168.1.42");
-    //strcpy(IPloc, "0.0.0.0");
+    ///*burrar i aplicar lo de sota abans dentregar, aixo es per debbugejar*/strcpy(IPloc, "192.168.1.42");
+    strcpy(IPloc, "0.0.0.0");
     socket = LUMI_crearSocket(IPloc,1714);
     int resposta;
     while(1){
