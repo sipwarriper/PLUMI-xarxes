@@ -32,7 +32,7 @@
 /* des d'aqui fins al final de fitxer.                                    */
 /* Com a mínim heu de fer les següents funcions internes:                 */
 
-int UDP_CreaSock(const char *IPloc, int portUDPloc); 
+int UDP_CreaSock(const char *IPloc, int portUDPloc);
 int UDP_EnviaA(int Sck, const char *IPrem, int portUDPrem, const char *SeqBytes, int LongSeqBytes);
 int UDP_RepDe(int Sck, char *IPrem, int *portUDPrem, char *SeqBytes, int LongSeqBytes);
 int UDP_TancaSock(int Sck);
@@ -46,6 +46,7 @@ int *Log_CreaFitx(const char *NomFitxLog);
 int Log_Escriu(int *FitxLog, const char *MissLog);
 int Log_TancaFitx(int *FitxLog);
 
+int arxiuLog;
 
 /* Definicio de funcions EXTERNES, és a dir, d'aquelles que en altres     */
 /* fitxers externs es faran servir.                                       */
@@ -61,6 +62,7 @@ int Log_TancaFitx(int *FitxLog);
 /* Retorna -1 si hi ha error; l’identificador del socket creat si tot     */
 /* va bé.                                                                 */
 int LUMI_crearSocket(const char *IPloc, int portUDPloc){
+    Log_Escriu(arxiuLog,"Creem socket\n");
     return UDP_CreaSock(IPloc, portUDPloc);
 }
 
@@ -86,6 +88,8 @@ int LUMI_iniServ(const char* nomFitxer, int *nClients, struct Client *client, ch
     }
     *nClients = count;
     fclose(fid);
+    arxiuLog=Log_CreaFitx("log.txt");
+    Log_Escriu(arxiuLog,"Servidor inicialitzat\n");
     return 0;
 }
 
@@ -94,6 +98,7 @@ int LUMI_iniServ(const char* nomFitxer, int *nClients, struct Client *client, ch
  * Funció que actualitza el fitxer de configuració a fid amb l'estat actual dels clients
  * Retorna 1   */
 int LUMI_ActualitzarFitxerRegistre(const struct Client *clients, int nClients, const char *nomFitxer, const char* domini){
+    Log_Escriu(arxiuLog,"Actualitzem registre \n");
     int fid = open(nomFitxer, O_CREAT|O_TRUNC|O_WRONLY);
 	int writeB = write(fid, domini, strlen(domini));
     int i;
@@ -198,6 +203,7 @@ int LUMI_RLocalitzacio(int Sck, const char *MIrem, const char* IP, int portTCP, 
  * Funció que descxifra quina sol·licitud li han donat al servidor
  * Retorna -1 si no coneix la petició; 0 si és desregistre, 1 si és Registre, 2 si es localització i 3 si es resposta a Localització */
 int LUMI_ServDescxifrarRebut(const char* missatge) {
+    Log_Escriu(arxiuLog,"Desxifrem la sol·licitud\n");
     char a = missatge[0];
     if(a=='D') return DESREGISTRE;
     else if(a=='R') return REGISTRE;
@@ -209,6 +215,7 @@ int LUMI_ServDescxifrarRebut(const char* missatge) {
  * Funció que fa el registre d'un client al servidor, i envia la resposta adient al socket inicial, també actualitza el arxiu de clients
  * */
 int LUMI_ServidorReg(struct Client *clients, int nClients,const char *Entrada,  const char *IP, int port, const char *nomFitxer,const char* domini, int socket) {
+    Log_Escriu(arxiuLog,"Fem registre\n");
     if (Entrada[0] != 'R') {
         UDP_EnviaA(socket, IP, port, "A2", 2);
         return 2;
@@ -237,6 +244,7 @@ int LUMI_ServidorReg(struct Client *clients, int nClients,const char *Entrada,  
  * Funció que fa el desregistre d'un client al servidor, i envia la resposta adient al socket inicial, també actualitza el arxiu de clients
  * */
 int LUMI_ServidorDesreg(struct Client *clients, int nClients,const char *Entrada, const char *IP, int port,const char *nomFitxer , const char* domini, int socket){
+    Log_Escriu(arxiuLog,"Fem desregistre\n");
     if(Entrada[0]!='D'){
         UDP_EnviaA(socket, IP, port, "A2", 2);
         return 2;
@@ -259,6 +267,7 @@ int LUMI_ServidorDesreg(struct Client *clients, int nClients,const char *Entrada
     return 0;
 }
 int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dominiloc, struct Client *clients, int nClients){
+    Log_Escriu(arxiuLog,"Localitzem\n");
     int i=1, j=0;
     char domini[20];
     while(missatge[i]!='@') i++;
@@ -301,6 +310,7 @@ int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dom
 }
 
 int LUMI_ServidorRLoc(int Sck, char * missatge, int longMissatge, const char* dominiloc, struct Client *clients, int nClients){
+    Log_Escriu(arxiuLog,"Tornem resposta a localització\n");
     int i=2, j=0;
     char domini[20];
     while(missatge[i]!='@') i++;
