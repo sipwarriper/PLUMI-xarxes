@@ -42,9 +42,9 @@ int UDP_Envia(int Sck, const char *SeqBytes, int LongSeqBytes);
 int UDP_Rep(int Sck, char *SeqBytes, int LongSeqBytes);
 int UDP_TrobaAdrSockRem(int Sck, char *IPrem, int *portUDPrem);
 int HaArribatAlgunaCosaEnTemps(const int *LlistaSck, int LongLlistaSck, int Temps);
-int Log_CreaFitx(const char *NomFitxLog);
-int Log_Escriu(int FitxLog, const char *MissLog);
-int Log_TancaFitx(int FitxLog);
+int *Log_CreaFitx(const char *NomFitxLog);
+int Log_Escriu(int *FitxLog, const char *MissLog);
+int Log_TancaFitx(int *FitxLog);
 
 
 /* Definicio de funcions EXTERNES, és a dir, d'aquelles que en altres     */
@@ -77,10 +77,10 @@ int LUMI_iniServ(const char* nomFitxer, int *nClients, struct Client *client, ch
     if (feof(fid) || ferror(fid)) return -1;
     //fgetc(fid);
     while (!feof(fid)){
-        int a = fscanf(fid, "%s", client[count].nom);
-        int b = fscanf(fid, "%i", client[count].estat);
-        int c = fscanf(fid, "%s", client[count].IP);
-        int d = fscanf(fid, "%i", client[count].port);
+        fscanf(fid, "%s", client[count].nom);
+        fscanf(fid, "%i", &client[count].estat);
+        fscanf(fid, "%s", client[count].IP);
+        fscanf(fid, "%i", &client[count].port);
         count++;
         //haig de tractar el salt de linia?
     }
@@ -331,9 +331,9 @@ int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dom
             else cont++;
         }
         if (trobat == 0) {
-            LUMI_RLocalitzacio(Sck, *MIrem, "0.0.0.0", 0, 2);
+            LUMI_RLocalitzacio(Sck, MIrem, "0.0.0.0", 0, 2);
         }
-        else if(clients[cont].estat=DESCONNECTAT)LUMI_RLocalitzacio(Sck, *MIrem, "0.0.0.0", 0, 1);
+        else if(clients[cont].estat==DESCONNECTAT)LUMI_RLocalitzacio(Sck, MIrem, "0.0.0.0", 0, 1);
         if(UDP_EnviaA(Sck, clients[cont].IP,clients[cont].port,missatge,longMissatge)==-1) return -1;
     }
     else {
@@ -459,7 +459,7 @@ int UDP_TrobaAdrSockLoc(int Sck, char *IPloc, int *portUDPloc)
     socklen_t peeraddrlen = sizeof(peeraddr);
     getsockname(fileno(Sck), &peeraddr, &peeraddrlen);
     inet_ntop(AF_INET, &(peeraddr.sin_addr), IPloc, INET_ADDRSTRLEN);
-    portUDPloc=ntohs(peeraddr.sin_port);
+    *portUDPloc=ntohs(peeraddr.sin_port);
 }
 
 /* El socket UDP d’identificador “Sck” es connecta al socket UDP d’@IP    */
@@ -517,7 +517,7 @@ int UDP_TrobaAdrSockRem(int Sck, char *IPrem, int *portUDPrem)
     socklen_t peeraddrlen = sizeof(peeraddr);
     getpeername(fileno(Sck), &peeraddr, &peeraddrlen);
     inet_ntop(AF_INET, &(peeraddr.sin_addr), IPrem, INET_ADDRSTRLEN);
-    portUDPrem=ntohs(peeraddr.sin_port);
+    *portUDPrem=ntohs(peeraddr.sin_port);
 }
 
 /* Examina simultàniament durant "Temps" (en [ms] els sockets (poden ser  */
@@ -573,7 +573,7 @@ int ResolDNSaIP(const char *NomDNS, char *IP)
 /* en '\0') d'una longitud qualsevol.                                     */
 /* Retorna -1 si hi ha error; l'identificador del fitxer creat si tot va  */
 /* bé.                                                                    */
-int Log_CreaFitx(const char *NomFitxLog)
+int * Log_CreaFitx(const char *NomFitxLog)
 {
     return fopen(NomFitxLog,"w");
 }
@@ -584,7 +584,7 @@ int Log_CreaFitx(const char *NomFitxLog)
 /* en '\0') d'una longitud qualsevol.                                     */
 /* Retorna -1 si hi ha error; el nombre de caràcters del missatge de      */
 /* "log" (sense el '\0') si tot va bé                                     */
-int Log_Escriu(int FitxLog, const char *MissLog)
+int Log_Escriu(int * FitxLog, const char *MissLog)
 {
     FILE *arxiu = FitxLog;
     if(arxiu!=NULL){
@@ -598,7 +598,7 @@ int Log_Escriu(int FitxLog, const char *MissLog)
 
 /* Tanca el fitxer de "log" d'identificador "FitxLog".                    */
 /* Retorna -1 si hi ha error; un valor positiu qualsevol si tot va bé.    */
-int Log_TancaFitx(int FitxLog)
+int Log_TancaFitx(int * FitxLog)
 {
  fclose(FitxLog);
 }
