@@ -70,15 +70,32 @@ int LUMI_crearSocket(const char *IPloc, int portUDPloc){
  * Retorna -1 si hi ha error amb el fitxer i el codi identificatiu d'aquest en cas contrari
  * */
 int LUMI_iniServ(const char* nomFitxer, int *nClients, struct Client *client, char* domini){
+    FILE * fid = fopen(nomFitxer,"r");
+    int count=0;
+    fscanf(fid, "%s", domini);
+    if (fid==NULL) return -1;
+    if (feof(fid) || ferror(fid)) return -1;
+    //fgetc(fid);
+    while (!feof(fid)){
+        int a = fscanf(fid, "%s", client[count].nom);
+        int b = fscanf(fid, "%i", client[count].estat);
+        int c = fscanf(fid, "%s", client[count].IP);
+        int d = fscanf(fid, "%i", client[count].port);
+        count++;
+        //haig de tractar el salt de linia?
+    }
+    *nClients = count;
+    return 0;
 
-    int fid = open(nomFitxer,O_RDONLY);
+    /*int fid = open(nomFitxer,O_RDONLY);
     if (fid==-1) return -1;
     int readB;
     char buffer[200];
     char *next;
     char *current;
     if((readB=read(fid, buffer, 200))>0){
-        strncpy(buffer, domini,readB);
+        buffer[readB] = '\0';
+        strncpy(buffer, domini,readB+1);
         int i=0;
         while ((readB=read(fid, buffer, 200))>0) {
             current = buffer;
@@ -114,7 +131,7 @@ int LUMI_iniServ(const char* nomFitxer, int *nClients, struct Client *client, ch
        return fid;
     }
     else return -1;
-
+*/
 }
 
 

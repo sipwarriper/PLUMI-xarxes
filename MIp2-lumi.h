@@ -20,7 +20,7 @@ enum Estat {DESCONNECTAT=0, LLIURE=1, OCUPAT=2};
 enum TipusMissatge {REGISTRE,DESREGISTRE,LOCALITZACIO,ACK,RESPOSTALOC};
 
 struct Client {
-    char nom[20];
+    char nom[50];
     char IP[16];
     enum Estat estat;
     int port;
