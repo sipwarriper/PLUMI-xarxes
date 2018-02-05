@@ -139,7 +139,7 @@ int LUMI_Desregistre(int Sck, const char * MI){
  * Funció que demana una petició de registre al servidor connectat a Sck de l'usuari MI
  * Retorna -2 si el servidor està desconectat; -1 si hi ha error; 0 si el desregistre es correcte; 1 si l'usuari no existeix; 2 si format incorrecte  */
 int LUMI_Registre(int Sck, const char * MI){
-    char buffer[21];
+    char buffer[50];
     int b = sprintf(buffer,"R%s", MI);
     int x, i=0;
     if((x = UDP_Envia(Sck, buffer, b))==-1) {;return -1;}
@@ -150,8 +150,8 @@ int LUMI_Registre(int Sck, const char * MI){
         if((x = UDP_Envia(Sck, buffer, b))==-1) {;return -1;}
     }
     if (x==-2) return -2;
-    x = UDP_Rep(Sck, buffer,21);
-	printf("%d",((int)buffer[1]-48));
+    x = UDP_Rep(Sck, buffer,50);
+	//printf("%d",((int)buffer[1]-48));
     return ((int)buffer[1]-48);
 }
 
