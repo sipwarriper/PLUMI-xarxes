@@ -32,7 +32,7 @@
 /* des d'aqui fins al final de fitxer.                                    */
 /* Com a mínim heu de fer les següents funcions internes:                 */
 
-int UDP_CreaSock(const char *IPloc, int portUDPloc);
+int UDP_CreaSock(const char *IPloc, int portUDPloc); 
 int UDP_EnviaA(int Sck, const char *IPrem, int portUDPrem, const char *SeqBytes, int LongSeqBytes);
 int UDP_RepDe(int Sck, char *IPrem, int *portUDPrem, char *SeqBytes, int LongSeqBytes);
 int UDP_TancaSock(int Sck);
