@@ -62,10 +62,10 @@ int main(int argc,char *argv[])
 		perror("error al resoldre DNS\n");
 		exit(1);
 	}
-	printf("%s\n",ipServ);
+	//printf("%s\n",ipServ);
     sckUDP=LUMI_crearSocket(iploc,0);
     socUDP=LUMI_connexio(sckUDP,ipServ,1714);
-	printf("%d\n",sckUDP);
+	//printf("%d\n",sckUDP);
 	if(socUDP==-1||sckUDP==-1){
 		printf("Error amb els sockets udp");
 		return -1;
