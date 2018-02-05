@@ -32,7 +32,7 @@
 
 int main(int argc,char *argv[])
 {
-	int portloc, sesc, sck_rep, portrem, scon, bytes_llegits, bytes_escrits,sckRep_Conv;
+	int portloc, sesc, sck_rep, portrem, scon, bytes_llegits, sckRep_Conv;
 	char iprem[16];
 	char iploc[16];
     char ipServ[16];
@@ -41,7 +41,6 @@ int main(int argc,char *argv[])
 	char nick[16];
 	char nickRem[16];
 	char linia[300];
-	char buffer[304];
 	int opcio=1;
     int sckUDP, socUDP;
  /* Declaració de variables, p.e., int n;                                 */
@@ -53,7 +52,6 @@ int main(int argc,char *argv[])
     printf("IP@port: %s@%u\n", iploc,portloc);
     printf("Entra el teu usuari MI\n");
 	scanf("%s",usuariMIloc);
-    int bytesllegitsr=strlen(usuariMIloc);
 	char nomDns[20];
 	strcpy(nomDns,usuariMIloc);
 	char *novaStrink;
@@ -115,7 +113,6 @@ int main(int argc,char *argv[])
 		}
 		iprem[15]='\0';
 		iploc[15]='\0';
-		//printf("Local IP@port: %s@%u\n", ipMostrar,portMostrar);
 		printf("Remot IP@port: %s@%u\n", iprem,portrem);
 		printf("conversi\n");
 		do{
@@ -124,7 +121,7 @@ int main(int argc,char *argv[])
 				bytes_llegits = read(0,linia,sizeof(linia));
 				if(linia[0] == ':') break;
 				linia[bytes_llegits-1]='\0'; //perpoder fer strlen, si passa salt de linia, fer -1
-				bytes_escrits = MI_EnviaLinia(scon, linia);
+				MI_EnviaLinia(scon, linia);
 			}else{ //socket
 				bytes_llegits = MI_RepLinia(sckRep_Conv, linia);
 				if(bytes_llegits!=-2) printf("%s: %s\n", nickRem, linia);
