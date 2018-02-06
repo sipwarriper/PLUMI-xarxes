@@ -82,7 +82,8 @@ int LUMI_iniServ(const char* nomFitxer, int *nClients, struct Client *client, ch
         fscanf(fid, "%s", client[count].nom);
         fscanf(fid, "%i", &client[count].estat);
         fscanf(fid, "%s", client[count].IP);
-        fscanf(fid, "%i", &client[count].port);
+        fscanf(fid, "%i ", &client[count].port);
+        printf("%s %d %s %d",client[count].nom,client[count].estat,client[count].IP,client[count].port);
         count++;
         //haig de tractar el salt de linia?
     }
@@ -284,6 +285,7 @@ int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dom
     int i=1, j=0;
     char domini[20];
     while(missatge[i]!='@') i++;
+    i++;
     while(missatge[i]!='/'){
         domini[j] = missatge[i];
         i++;
@@ -296,6 +298,10 @@ int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dom
         a++;
     }
     domini[j]='\0';
+    puts(domini);
+    puts("\n");
+    puts(dominiloc);
+    puts("\n");
     if(strcmp(domini, dominiloc)==0){
         //domini propi, has de buscar el client i enviarli la solicitud!
         Log_Escriu(arxiuLog,"DOMINI PROPI");
@@ -309,14 +315,14 @@ int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dom
             else cont++;
         }
         if (trobat == 0) {
-            Log_Escriu(arxiuLog,"DOMINI PROPI");
+            Log_Escriu(arxiuLog,"Usuari no trobat");
             LUMI_RLocalitzacio(Sck, MIrem, "0.0.0.0", 0, 2);
         }
         else if(clients[cont].estat==DESCONNECTAT)LUMI_RLocalitzacio(Sck, MIrem, "0.0.0.0", 0, 1);
         if(UDP_EnviaA(Sck, clients[cont].IP,clients[cont].port,missatge,longMissatge)==-1) return -1;
     }
     else {
-        //resoldre domini i repetir resposta
+        Log_Escriu(arxiuLog,"Domini extern");
         char IP[16];
         ResolDNSaIP(domini, IP);
         if (UDP_EnviaA(Sck,IP,1714,missatge,longMissatge)==-1) return -1;
