@@ -169,7 +169,7 @@ int LUMI_Registre(int Sck, const char * MI){
 
 int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem, char * IP, int * portTCP){
     char buffer[60];
-    int b = sprintf(buffer,"L%s/%s",MIloc, MIrem);
+    int b = sprintf(buffer,"L%s/%s",MIrem, MIloc);
     int x, i=0, rEnvio=-2;
     if((x = UDP_Envia(Sck, buffer, b))==-1) return -1;
     int a[1];
