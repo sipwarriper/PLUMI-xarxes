@@ -115,6 +115,7 @@ int main(int argc,char *argv[])
 			}
 		}
 		else if(sck_rep==sckUDP){
+			puts("REBEM PETICIO DE LOCALITZACIO");
             LUMI_RLocalitzacio(sckUDP,usuariMIrem,iploc,portloc,0);
 		}
 		else{

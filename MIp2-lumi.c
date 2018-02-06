@@ -298,6 +298,7 @@ int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dom
     domini[j]='\0';
     if(strcmp(domini, dominiloc)==0){
         //domini propi, has de buscar el client i enviarli la solicitud!
+        Log_Escriu(arxiuLog,"DOMINI PROPI");
         char nom[50];
         for(j=1;j<i;j++) nom[j-1]=missatge[j];
         nom[j]='\0';
@@ -308,6 +309,7 @@ int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dom
             else cont++;
         }
         if (trobat == 0) {
+            Log_Escriu(arxiuLog,"DOMINI PROPI");
             LUMI_RLocalitzacio(Sck, MIrem, "0.0.0.0", 0, 2);
         }
         else if(clients[cont].estat==DESCONNECTAT)LUMI_RLocalitzacio(Sck, MIrem, "0.0.0.0", 0, 1);
