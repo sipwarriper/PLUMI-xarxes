@@ -133,9 +133,9 @@ int LUMI_Desregistre(int Sck, const char * MI){
     int b = sprintf(buffer,"D%s", MI);
     int x, i=0;
     if((x = UDP_Envia(Sck, buffer, b))==-1) return -1;
-    int a[0];
+    int a[1];
     a[0]=Sck;
-    while((x = HaArribatAlgunaCosaEnTemps(a,1,2000))==-2 && i<5){
+    while((x = HaArribatAlgunaCosaEnTemps(a,1,50))==-2 && i<5){
         i++;
         if((x = UDP_Envia(Sck, buffer, b))==-1) return -1;
     }
@@ -152,9 +152,9 @@ int LUMI_Registre(int Sck, const char * MI){
     int b = sprintf(buffer,"R%s", MI);
     int x, i=0;
     if((x = UDP_Envia(Sck, buffer, b))==-1) {;return -1;}
-    int a[0];
+    int a[1];
     a[0]=Sck;
-    while((x = HaArribatAlgunaCosaEnTemps(a,1,2000))==-2 && i<5){
+    while((x = HaArribatAlgunaCosaEnTemps(a,1,50))==-2 && i<5){
         i++;
         if((x = UDP_Envia(Sck, buffer, b))==-1) {;return -1;}
     }
@@ -169,9 +169,9 @@ int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem, char * IP, 
     int b = sprintf(buffer,"L%s/%s",MIloc, MIrem);
     int x, i=0;
     if((x = UDP_Envia(Sck, buffer, b))==-1) return -1;
-    int a[0];
+    int a[1];
     a[0]=Sck;
-    while((x = HaArribatAlgunaCosaEnTemps(a,1,2000))==-2 && i<5){
+    while((x = HaArribatAlgunaCosaEnTemps(a,1,50))==-2 && i<5){
         i++;
         if((x = UDP_Envia(Sck, buffer, b))==-1) return -1;
     }
