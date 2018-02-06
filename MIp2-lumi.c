@@ -414,7 +414,7 @@ int UDP_RepDe(int Sck, char *IPrem, int *portUDPrem, char *SeqBytes, int LongSeq
 /* Retorna -1 si hi ha error; un valor positiu qualsevol si tot va bé.    */
 int UDP_TancaSock(int Sck)
 {
-    close(Sck);
+    return close(Sck);
 }
 
 /* Donat el socket UDP d’identificador “Sck”, troba l’adreça d’aquest     */
@@ -430,6 +430,7 @@ int UDP_TrobaAdrSockLoc(int Sck, char *IPloc, int *portUDPloc)
     getsockname(fileno(Sck), &peeraddr, &peeraddrlen);
     inet_ntop(AF_INET, &(peeraddr.sin_addr), IPloc, INET_ADDRSTRLEN);
     *portUDPloc=ntohs(peeraddr.sin_port);
+    return 0;
 }
 
 /* El socket UDP d’identificador “Sck” es connecta al socket UDP d’@IP    */
