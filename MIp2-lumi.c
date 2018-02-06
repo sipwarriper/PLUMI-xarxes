@@ -131,16 +131,18 @@ int LUMI_connexio(int Sck, const char *IPrem, int portUDPrem){
 int LUMI_Desregistre(int Sck, const char * MI){
     char buffer[21];
     int b = sprintf(buffer,"D%s", MI);
-    int x, i=0;
+    int x, i=0, rEnvio=-2;
     if((x = UDP_Envia(Sck, buffer, b))==-1) return -1;
     int a[1];
     a[0]=Sck;
-    while((x = HaArribatAlgunaCosaEnTemps(a,1,50))==-2 && i<5){
+    while(rEnvio==-2 && i<5) {
+        rEnvio = HaArribatAlgunaCosaEnTemps(a,1,50);
         i++;
-        if((x = UDP_Envia(Sck, buffer, b))==-1) return -1;
+        if ((x = UDP_Envia(Sck, buffer, b)) == -1) return -1;
     }
-    if (x==-2) return -2;
-    x = UDP_Rep(Sck, buffer,21);
+    if (rEnvio==-2) return -2;
+    x = UDP_Rep(Sck, buffer,50);
+    //printf("%d",((int)buffer[1]-48));
     return ((int)buffer[1]-48);
 }
 
@@ -150,15 +152,16 @@ int LUMI_Desregistre(int Sck, const char * MI){
 int LUMI_Registre(int Sck, const char * MI){
     char buffer[50];
     int b = sprintf(buffer,"R%s", MI);
-    int x, i=0;
-    if((x = UDP_Envia(Sck, buffer, b))==-1) {;return -1;}
+    int x, i=0, rEnvio=-2;
+    if((x = UDP_Envia(Sck, buffer, b))==-1) return -1;
     int a[1];
     a[0]=Sck;
-    while((x = HaArribatAlgunaCosaEnTemps(a,1,50))==-2 && i<5){
+    while(rEnvio==-2 && i<5) {
+        rEnvio = HaArribatAlgunaCosaEnTemps(a,1,50);
         i++;
-        if((x = UDP_Envia(Sck, buffer, b))==-1) {;return -1;}
+        if ((x = UDP_Envia(Sck, buffer, b)) == -1) return -1;
     }
-    if (x==-2) return -2;
+    if (rEnvio==-2) return -2;
     x = UDP_Rep(Sck, buffer,50);
 	//printf("%d",((int)buffer[1]-48));
     return ((int)buffer[1]-48);
@@ -167,15 +170,16 @@ int LUMI_Registre(int Sck, const char * MI){
 int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem, char * IP, int * portTCP){
     char buffer[60];
     int b = sprintf(buffer,"L%s/%s",MIloc, MIrem);
-    int x, i=0;
+    int x, i=0, rEnvio=-2;
     if((x = UDP_Envia(Sck, buffer, b))==-1) return -1;
     int a[1];
     a[0]=Sck;
-    while((x = HaArribatAlgunaCosaEnTemps(a,1,50))==-2 && i<5){
+    while(rEnvio==-2 && i<5) {
+        rEnvio = HaArribatAlgunaCosaEnTemps(a,1,50);
         i++;
-        if((x = UDP_Envia(Sck, buffer, b))==-1) return -1;
+        if ((x = UDP_Envia(Sck, buffer, b)) == -1) return -1;
     }
-    if (x==-2) return -2;
+    if (rEnvio==-2) return -2;
     x = UDP_Rep(Sck, buffer,60);
     int z=strlen(MIloc)+3; //posicio on comença el port
     char portTemp[6];
@@ -226,21 +230,22 @@ int LUMI_ServidorReg(struct Client *clients, int nClients,const char *Entrada,  
     }
     char nom[150];
     strcpy(nom,&Entrada[1]);
-    int acabat =0;
-    for(int i =0;i<nClients && !acabat;i++){
+    int acabat=0, i=0;
+    while (acabat==0 && i<nClients){
         if(strcmp(clients[i].nom,nom)==0){
             clients[i].estat=LLIURE;
             clients[i].port=port;
             strcpy(clients[i].IP,IP);
             acabat=1;
         }
+        i++;
     }
-    if(!acabat) {
+    if(acabat==0) {
         UDP_EnviaA(socket,IP,port,"A1",2);
         return 1;
     }
-    LUMI_ActualitzarFitxerRegistre(clients,nClients,nomFitxer,domini);
     UDP_EnviaA(socket,IP,port,"A0",2);
+    LUMI_ActualitzarFitxerRegistre(clients,nClients,nomFitxer,domini);
     return 0;
 }
 
@@ -255,15 +260,16 @@ int LUMI_ServidorDesreg(struct Client *clients, int nClients,const char *Entrada
     }
     char nom[150];
     strcpy(nom,&Entrada[1]);
-    int acabat =0;
-    for(int i =0;i<nClients && !acabat;i++){
+    int acabat =0, i=0;
+    while (acabat==0 && i<nClients){
         if(strcmp(clients[i].nom,nom)==0){
             clients[i].estat=DESCONNECTAT;
             acabat=1;
         }
+        i++;
     }
-    if(!acabat) {
-        UDP_EnviaA(socket,IP,port,"A0",2);
+    if(acabat==0) {
+        UDP_EnviaA(socket,IP,port,"A1",2);
         return 1;
     }
     LUMI_ActualitzarFitxerRegistre(clients,nClients,nomFitxer,domini);
@@ -405,15 +411,16 @@ int UDP_RepDe(int Sck, char *IPrem, int *portUDPrem, char *SeqBytes, int LongSeq
     struct sockaddr_in adrrem;
     ladrrem = sizeof(adrrem);
     if((bllegit=recvfrom(Sck,SeqBytes,LongSeqBytes,0,(struct sockaddr*)&adrrem,&ladrrem))==-1) return -1; //LongSeqBytes podria ser sizeof(SeqBytes)
-    *IPrem= inet_ntoa(adrrem.sin_addr);
+    strcpy(IPrem, inet_ntoa(adrrem.sin_addr));
     *portUDPrem = ntohs(adrrem.sin_port);
+    return bllegit;
 }
 
 /* S’allibera (s’esborra) el socket UDP d’identificador “Sck”.            */
 /* Retorna -1 si hi ha error; un valor positiu qualsevol si tot va bé.    */
 int UDP_TancaSock(int Sck)
 {
-    close(Sck);
+    return close(Sck);
 }
 
 /* Donat el socket UDP d’identificador “Sck”, troba l’adreça d’aquest     */
@@ -429,6 +436,7 @@ int UDP_TrobaAdrSockLoc(int Sck, char *IPloc, int *portUDPloc)
     getsockname(fileno(Sck), &peeraddr, &peeraddrlen);
     inet_ntop(AF_INET, &(peeraddr.sin_addr), IPloc, INET_ADDRSTRLEN);
     *portUDPloc=ntohs(peeraddr.sin_port);
+    return 0;
 }
 
 /* El socket UDP d’identificador “Sck” es connecta al socket UDP d’@IP    */
@@ -500,6 +508,7 @@ int UDP_TrobaAdrSockRem(int Sck, char *IPrem, int *portUDPrem)
 /* l’identificador d’aquest socket.                                       */
 int HaArribatAlgunaCosaEnTemps(const int *LlistaSck, int LongLlistaSck, int Temps)
 {
+    int a;
     fd_set conjunt;
     FD_ZERO(&conjunt);
     int i, descmax = 0;
@@ -509,15 +518,16 @@ int HaArribatAlgunaCosaEnTemps(const int *LlistaSck, int LongLlistaSck, int Temp
         FD_SET(LlistaSck[i], &conjunt);
         if (LlistaSck[i] > descmax) descmax = LlistaSck[i];
     }
-    if (Temps==-1) if (select(descmax + 1, &conjunt, NULL, NULL, NULL) == -1) return -1;
+    if (Temps==-1) if (a=(select(descmax + 1, &conjunt, NULL, NULL, NULL)) == -1) return -1;
     else{
         t.tv_usec=Temps*1000;
-        if (select(descmax + 1, &conjunt, NULL, NULL, &t) == -1) return -1;
+        if (a=(select(descmax + 1, &conjunt, NULL, NULL, &t)) == -1) return -1;
     }
     //si sha de comprovar tb el teclat mirar primer desde aqui
+    if (a==0) return -2;
     for (i = 0; i<LongLlistaSck; i++) if (FD_ISSET(LlistaSck[i], &conjunt)) break;
-    if (i<LongLlistaSck) return LlistaSck[i];
-    else return -2;
+    return LlistaSck[i];
+
 }
 
 /* Donat el nom DNS "NomDNS" obté la corresponent @IP i l'escriu a "IP*"  */
