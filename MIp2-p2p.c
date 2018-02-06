@@ -98,7 +98,11 @@ int main(int argc,char *argv[])
 			if (opcio==0) break;
 			printf("Entra la adreça MI a la que et vols conectar:\n");
 			scanf("%s",usuariMIrem);
-			LUMI_Localitzacio(sckUDP,usuariMIloc,usuariMIrem,iprem, &portrem);
+			int x = LUMI_Localitzacio(sckUDP,usuariMIloc,usuariMIrem,iprem, &portrem);
+			if (x==-1) perror("error Localitzacio\n");
+			else if(x==1) perror("usuari offline\n");
+			else if(x==2) perror("usuari innexistent\n");
+			else if(x==3) perror("usuari ocupat\n");
             printf("Entrar nick \n");
             bytes_llegits = MI_Rep(0,nick,sizeof(nick));
             nick[bytes_llegits-1]='\0';
