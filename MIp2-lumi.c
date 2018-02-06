@@ -240,7 +240,7 @@ int LUMI_ServidorReg(struct Client *clients, int nClients,const char *Entrada,  
         }
         i++;
     }
-    if(acabat!=0) {
+    if(acabat==0) {
         UDP_EnviaA(socket,IP,port,"A1",2);
         return 1;
     }
@@ -260,15 +260,16 @@ int LUMI_ServidorDesreg(struct Client *clients, int nClients,const char *Entrada
     }
     char nom[150];
     strcpy(nom,&Entrada[1]);
-    int acabat =0;
-    for(int i =0;i<nClients && !acabat;i++){
+    int acabat =0, i=0;
+    while (acabat==0 && i<nClients){
         if(strcmp(clients[i].nom,nom)==0){
             clients[i].estat=DESCONNECTAT;
             acabat=1;
         }
+        i++;
     }
-    if(!acabat) {
-        UDP_EnviaA(socket,IP,port,"A0",2);
+    if(acabat==0) {
+        UDP_EnviaA(socket,IP,port,"A1",2);
         return 1;
     }
     LUMI_ActualitzarFitxerRegistre(clients,nClients,nomFitxer,domini);

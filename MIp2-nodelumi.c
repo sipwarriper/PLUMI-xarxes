@@ -47,6 +47,7 @@ int main(int argc,char *argv[])
             int portClient;
             char ipClient[16];
             int longitud=LUMI_RepDe(socket,ipClient,&portClient,missatge,MAXMISSATGE);
+            missatge[longitud]='\0';
             switch(LUMI_ServDescxifrarRebut(missatge)){
                 case REGISTRE:{
                     LUMI_ServidorReg(clients,nClients,missatge,ipClient,portClient,nomFitxer,domini,socket);
