@@ -405,8 +405,9 @@ int UDP_RepDe(int Sck, char *IPrem, int *portUDPrem, char *SeqBytes, int LongSeq
     struct sockaddr_in adrrem;
     ladrrem = sizeof(adrrem);
     if((bllegit=recvfrom(Sck,SeqBytes,LongSeqBytes,0,(struct sockaddr*)&adrrem,&ladrrem))==-1) return -1; //LongSeqBytes podria ser sizeof(SeqBytes)
-    *IPrem= inet_ntoa(adrrem.sin_addr);
+    IPrem= inet_ntoa(adrrem.sin_addr);
     *portUDPrem = ntohs(adrrem.sin_port);
+    return 1;
 }
 
 /* S’allibera (s’esborra) el socket UDP d’identificador “Sck”.            */
