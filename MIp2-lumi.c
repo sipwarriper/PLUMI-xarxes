@@ -44,7 +44,7 @@ int UDP_TrobaAdrSockRem(int Sck, char *IPrem, int *portUDPrem);
 int HaArribatAlgunaCosaEnTemps(const int *LlistaSck, int LongLlistaSck, int Temps);
 FILE* Log_CreaFitx(const char *NomFitxLog);
 int Log_Escriu(FILE* FitxLog, const char *MissLog);
-int Log_TancaFitx(FILE* FitxLog);
+int Log_TancaFitx(FILE* FitxLog); 
 
 FILE* arxiuLog;
 
