@@ -90,11 +90,12 @@ int MI_IniciaEscPetiRemConv(int portTCPloc,int* portFinal, char* ip)
 /* “servidor”).                                                           */
 /* Retorna -1 si hi ha error; 0 si arriba una petició local; SckEscMI si  */
 /* arriba una petició remota.                                             */
-int MI_HaArribatPetiConv(int SckEscMI)
+int MI_HaArribatPetiConv(int *llista, int nSocks)
 {
-		int fds[2];
-		fds[0] = 0; fds[1] = SckEscMI;
-		return HaArribatAlgunaCosa(fds, 2);
+	int fds[nSocks+1];
+	for (int i=0;i<nSocks;i++) fds[i]=llista[i];
+	fds[nSocks]=0;
+	return HaArribatAlgunaCosa(fds, nSocks+1);
 
 }
 

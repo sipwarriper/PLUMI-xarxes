@@ -88,10 +88,10 @@ int main(int argc,char *argv[])
 		perror("error format incorrecte\n");
 		exit(-1);
 	}
-
+    int llistaSockets[] = {sesc,socUDP};
 	while(opcio!=0){
 		printf("entra 0 per sortir, o un qualsevol per iniciar conversació, o espera connexió:\n");
-		sck_rep = MI_HaArribatPetiConv(sesc);
+		sck_rep = MI_HaArribatPetiConv(llistaSockets,2);
 	 /* Expressions, estructures de control, crides a funcions, etc.          */
 		if (sck_rep == 0) { // TECLAT
 			scanf("%i",&opcio);
@@ -114,9 +114,9 @@ int main(int argc,char *argv[])
 				exit(-1);
 			}
 		}
-		else if(sck_rep==sckUDP){
+		else if(sck_rep==socUDP){
 			puts("REBEM PETICIO DE LOCALITZACIO");
-            LUMI_RLocalitzacio(sckUDP,usuariMIrem,iploc,portloc,0);
+            LUMI_RLocalitzacio(sckUDP,usuariMIloc,iploc,portloc,0);
 		}
 		else{
 			printf("LA HAS CAGAO LOKO \n");
