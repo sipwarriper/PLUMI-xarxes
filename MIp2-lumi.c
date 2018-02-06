@@ -132,15 +132,14 @@ int LUMI_connexio(int Sck, const char *IPrem, int portUDPrem){
 int LUMI_Desregistre(int Sck, const char * MI){
     char buffer[21];
     int b = sprintf(buffer,"D%s", MI);
-    int x, i=0, rEnvio=-2;
-    if((x = UDP_Envia(Sck, buffer, b))==-1) return -1;
+    int x, i=0, rEnvio;
     int a[1];
     a[0]=Sck;
-    while(rEnvio==-2 && i<5) {
+    do{
+        if ((x = UDP_Envia(Sck, buffer, b)) == -1) return -1;
         rEnvio = HaArribatAlgunaCosaEnTemps(a,1,50);
         i++;
-        if ((x = UDP_Envia(Sck, buffer, b)) == -1) return -1;
-    }
+    }while(rEnvio==-2 && i<5);
     if (rEnvio==-2) return -2;
     x = UDP_Rep(Sck, buffer,50);
     //printf("%d",((int)buffer[1]-48));
@@ -153,15 +152,14 @@ int LUMI_Desregistre(int Sck, const char * MI){
 int LUMI_Registre(int Sck, const char * MI){
     char buffer[50];
     int b = sprintf(buffer,"R%s", MI);
-    int x, i=0, rEnvio=-2;
-    if((x = UDP_Envia(Sck, buffer, b))==-1) return -1;
+    int x, i=0, rEnvio;
     int a[1];
     a[0]=Sck;
-    while(rEnvio==-2 && i<5) {
+    do{
+        if ((x = UDP_Envia(Sck, buffer, b)) == -1) return -1;
         rEnvio = HaArribatAlgunaCosaEnTemps(a,1,50);
         i++;
-        if ((x = UDP_Envia(Sck, buffer, b)) == -1) return -1;
-    }
+    }while(rEnvio==-2 && i<5);
     if (rEnvio==-2) return -2;
     x = UDP_Rep(Sck, buffer,50);
 	//printf("%d",((int)buffer[1]-48));
@@ -171,15 +169,14 @@ int LUMI_Registre(int Sck, const char * MI){
 int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem, char * IP, int * portTCP){
     char buffer[60];
     int b = sprintf(buffer,"L%s/%s",MIrem, MIloc);
-    int x, i=0, rEnvio=-2;
-    if((x = UDP_Envia(Sck, buffer, b))==-1) return -1;
+    int x, i=0, rEnvio;
     int a[1];
     a[0]=Sck;
-    while(rEnvio==-2 && i<5) {
+    do{
+        if ((x = UDP_Envia(Sck, buffer, b)) == -1) return -1;
         rEnvio = HaArribatAlgunaCosaEnTemps(a,1,50);
         i++;
-        if ((x = UDP_Envia(Sck, buffer, b)) == -1) return -1;
-    }
+    }while(rEnvio==-2 && i<5);
     if (rEnvio==-2) return -2;
     x = UDP_Rep(Sck, buffer,60);
     int z=strlen(MIloc)+3; //posicio on comença el port
