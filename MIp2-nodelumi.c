@@ -69,5 +69,6 @@ int main(int argc,char *argv[])
             }
         }
     }
+    LUMI_finiServ();
     return 0;
 }

@@ -42,11 +42,11 @@ int UDP_Envia(int Sck, const char *SeqBytes, int LongSeqBytes);
 int UDP_Rep(int Sck, char *SeqBytes, int LongSeqBytes);
 int UDP_TrobaAdrSockRem(int Sck, char *IPrem, int *portUDPrem);
 int HaArribatAlgunaCosaEnTemps(const int *LlistaSck, int LongLlistaSck, int Temps);
-int *Log_CreaFitx(const char *NomFitxLog);
-int Log_Escriu(int *FitxLog, const char *MissLog);
-int Log_TancaFitx(int *FitxLog);
+FILE* Log_CreaFitx(const char *NomFitxLog);
+int Log_Escriu(FILE* FitxLog, const char *MissLog);
+int Log_TancaFitx(FILE* FitxLog);
 
-int arxiuLog;
+FILE* arxiuLog;
 
 /* Definicio de funcions EXTERNES, és a dir, d'aquelles que en altres     */
 /* fitxers externs es faran servir.                                       */
@@ -90,6 +90,10 @@ int LUMI_iniServ(const char* nomFitxer, int *nClients, struct Client *client, ch
     fclose(fid);
     arxiuLog=Log_CreaFitx("log.txt");
     Log_Escriu(arxiuLog,"Servidor inicialitzat\n");
+    return 0;
+}
+int LUMI_finiServ(){
+    Log_TancaFitx(arxiuLog);
     return 0;
 }
 
@@ -538,9 +542,11 @@ int ResolDNSaIP(const char *NomDNS, char *IP)
 /* en '\0') d'una longitud qualsevol.                                     */
 /* Retorna -1 si hi ha error; l'identificador del fitxer creat si tot va  */
 /* bé.                                                                    */
-int * Log_CreaFitx(const char *NomFitxLog)
+FILE* Log_CreaFitx(const char *NomFitxLog)
 {
-    return fopen(NomFitxLog,"w");
+    FILE* pFile= fopen(NomFitxLog,"wb");
+    fputs("KIKASSO\n",pFile);
+    return pFile;
 }
 
 /* Escriu al fitxer de "log" d'identificador "FitxLog" el missatge de     */
@@ -549,12 +555,11 @@ int * Log_CreaFitx(const char *NomFitxLog)
 /* en '\0') d'una longitud qualsevol.                                     */
 /* Retorna -1 si hi ha error; el nombre de caràcters del missatge de      */
 /* "log" (sense el '\0') si tot va bé                                     */
-int Log_Escriu(int * FitxLog, const char *MissLog)
+int Log_Escriu(FILE* FitxLog, const char *MissLog)
 {
-    FILE *arxiu = FitxLog;
-    if(arxiu!=NULL){
-        fputs(MissLog,arxiu);
-        fputs("\n",arxiu);
+    if(FitxLog!=NULL){
+        fprintf(FitxLog,"TEST");
+        fprintf(FitxLog,"\n");
         return strlen(MissLog);
     }
     else return -1;
@@ -563,9 +568,9 @@ int Log_Escriu(int * FitxLog, const char *MissLog)
 
 /* Tanca el fitxer de "log" d'identificador "FitxLog".                    */
 /* Retorna -1 si hi ha error; un valor positiu qualsevol si tot va bé.    */
-int Log_TancaFitx(int * FitxLog)
+int Log_TancaFitx(FILE* FitxLog)
 {
- fclose(FitxLog);
+    fclose(FitxLog);
 }
 
 
