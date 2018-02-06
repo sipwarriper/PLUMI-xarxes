@@ -151,12 +151,12 @@ int LUMI_Registre(int Sck, const char * MI){
     char buffer[50];
     int b = sprintf(buffer,"R%s", MI);
     int x, i=0;
-    if((x = UDP_Envia(Sck, buffer, b))==-1) {;return -1;}
+    if((x = UDP_Envia(Sck, buffer, b))==-1) return -1;
     int a[1];
     a[0]=Sck;
     while((x = HaArribatAlgunaCosaEnTemps(a,1,50))==-2 && i<5){
         i++;
-        if((x = UDP_Envia(Sck, buffer, b))==-1) {;return -1;}
+        if((x = UDP_Envia(Sck, buffer, b))==-1) return -1;
     }
     if (x==-2) return -2;
     x = UDP_Rep(Sck, buffer,50);
