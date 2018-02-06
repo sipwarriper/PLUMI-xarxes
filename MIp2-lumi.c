@@ -230,6 +230,7 @@ int LUMI_ServidorReg(struct Client *clients, int nClients,const char *Entrada,  
     }
     char nom[150];
     strcpy(nom,&Entrada[1]);
+    Log_Escriu(arxiuLog,&Entrada[1]);
     int acabat=0, i=0;
     while (acabat==0 && i<nClients){
         if(strcmp(clients[i].nom,nom)==0){
@@ -241,9 +242,11 @@ int LUMI_ServidorReg(struct Client *clients, int nClients,const char *Entrada,  
         i++;
     }
     if(acabat==0) {
+        Log_Escriu(arxiuLog,"USUARI INEXISTENT\n");
         UDP_EnviaA(socket,IP,port,"A1",2);
         return 1;
     }
+    Log_Escriu(arxiuLog,"Usuari trobat\n");
     UDP_EnviaA(socket,IP,port,"A0",2);
     LUMI_ActualitzarFitxerRegistre(clients,nClients,nomFitxer,domini);
     return 0;
@@ -568,7 +571,8 @@ FILE* Log_CreaFitx(const char *NomFitxLog)
 int Log_Escriu(FILE* FitxLog, const char *MissLog)
 {
     if(FitxLog!=NULL){
-        fprintf(FitxLog,"TEST");
+        fprintf(FitxLog,MissLog);
+        puts(MissLog);
         fprintf(FitxLog,"\n");
         return strlen(MissLog);
     }
