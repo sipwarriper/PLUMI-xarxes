@@ -500,6 +500,7 @@ int UDP_TrobaAdrSockRem(int Sck, char *IPrem, int *portUDPrem)
 /* l’identificador d’aquest socket.                                       */
 int HaArribatAlgunaCosaEnTemps(const int *LlistaSck, int LongLlistaSck, int Temps)
 {
+    int a;
     fd_set conjunt;
     FD_ZERO(&conjunt);
     int i, descmax = 0;
@@ -509,15 +510,16 @@ int HaArribatAlgunaCosaEnTemps(const int *LlistaSck, int LongLlistaSck, int Temp
         FD_SET(LlistaSck[i], &conjunt);
         if (LlistaSck[i] > descmax) descmax = LlistaSck[i];
     }
-    if (Temps==-1) if (select(descmax + 1, &conjunt, NULL, NULL, NULL) == -1) return -1;
+    if (Temps==-1) if (a=(select(descmax + 1, &conjunt, NULL, NULL, NULL)) == -1) return -1;
     else{
         t.tv_usec=Temps*1000;
-        if (select(descmax + 1, &conjunt, NULL, NULL, &t) == -1) return -1;
+        if (a=(select(descmax + 1, &conjunt, NULL, NULL, &t)) == -1) return -1;
     }
     //si sha de comprovar tb el teclat mirar primer desde aqui
+    if (a==0) return -2;
     for (i = 0; i<LongLlistaSck; i++) if (FD_ISSET(LlistaSck[i], &conjunt)) break;
-    if (i<LongLlistaSck) return LlistaSck[i];
-    else return -2;
+    return LlistaSck[i];
+
 }
 
 /* Donat el nom DNS "NomDNS" obté la corresponent @IP i l'escriu a "IP*"  */
