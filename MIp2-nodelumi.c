@@ -42,7 +42,7 @@ int main(int argc,char *argv[])
     while(1){
         resposta=LUMI_EsperaMissatge(socket);
         if(resposta!=-1){
-			printf("HE REBUT ALGO!!!!!!!!!! |n");
+			printf("HE REBUT ALGO!!!!!!!!!! \n");
             char missatge[MAXMISSATGE];
             int portClient;
             char ipClient[16];
