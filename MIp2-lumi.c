@@ -318,6 +318,9 @@ int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dom
             LUMI_RLocalitzacio(Sck, MIrem, "0.0.0.0", 0, 2);
         }
         else if(clients[cont].estat==DESCONNECTAT)LUMI_RLocalitzacio(Sck, MIrem, "0.0.0.0", 0, 1);
+        else{
+            Log_Escriu(arxiuLog,"Usuari trobat");
+        }
         if(UDP_EnviaA(Sck, clients[cont].IP,clients[cont].port,missatge,longMissatge)==-1) return -1;
     }
     else {
