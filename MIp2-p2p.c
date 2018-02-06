@@ -99,7 +99,9 @@ int main(int argc,char *argv[])
 			printf("Entra la adreça MI a la que et vols conectar:\n");
 			scanf("%s",usuariMIrem);
 			LUMI_Localitzacio(sckUDP,usuariMIloc,usuariMIrem,iprem, &portrem);
-			nick[bytes_llegits-1]='\0';
+            printf("Entrar nick \n");
+            bytes_llegits = MI_Rep(0,nick,sizeof(nick));
+            nick[bytes_llegits-1]='\0';
 			if((scon = MI_DemanaConv(iprem, portrem, iploc,0, nick, nickRem))==-1){
 				printf("error demanaConv\n");
 				exit(-1);
