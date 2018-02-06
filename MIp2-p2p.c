@@ -80,6 +80,14 @@ int main(int argc,char *argv[])
         perror("error registre\n");
         exit(-1);
     }
+	else if(opReg==1){
+		perror("usuari inexistent\n");
+		exit(-1);
+	}
+	else if(opReg==2){
+		perror("error format incorrecte\n");
+		exit(-1);
+	}
 
 	while(opcio!=0){
 		printf("entra 0 per sortir, o un qualsevol per iniciar conversació, o espera connexió:\n");
