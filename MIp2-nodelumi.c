@@ -58,7 +58,7 @@ int main(int argc,char *argv[])
                     break;
                 }
                 case LOCALITZACIO:{
-                    LUMI_ServidorLoc(socket,missatge,longitud,domini,clients,nClients);
+                    LUMI_ServidorLoc(socket,missatge,longitud,domini,clients,nClients,ipClient,portClient);
                     break;
                 }
                 case RESPOSTALOC:{
