@@ -199,25 +199,20 @@ int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem, char * IP, 
 }
 
 
-int LUMI_RLocalitzacio(int Sck, const char *MIrem, const char* IP, int portTCP, int estat){
+int LUMI_RLocalitzacio(int Sck, const char* IP, int portTCP, int estat){
     char MIrem1[30];
     char buffer[60];
     char missatge[60];
     int i=1, b;
-    if(estat==0){
-        int longMissatge = UDP_Rep(Sck,missatge,60);
-        while(missatge[i]!='/') i++;
-        int a=i+1;
-        while(a!=longMissatge){
-            MIrem1[a-(i+1)]=missatge[a];
-            a++;
-        }
-        MIrem1[a-(i-1)]='\0';
-        b = sprintf(buffer,"B%d%s%d%s",estat, MIrem1, portTCP, IP);
+    int longMissatge = UDP_Rep(Sck,missatge,60);
+    while(missatge[i]!='/') i++;
+    int a=i+1;
+    while(a!=longMissatge){
+        MIrem1[a-(i+1)]=missatge[a];
+        a++;
     }
-    else{
-        b = sprintf(buffer,"B%d%s%d%s",estat, MIrem, portTCP, IP);
-    }
+    MIrem1[a-(i-1)]='\0';
+    b = sprintf(buffer,"B%d%s%d%s",estat, MIrem1, portTCP, IP);
     return UDP_Envia(Sck, buffer, b);
 }
 
@@ -293,7 +288,7 @@ int LUMI_ServidorDesreg(struct Client *clients, int nClients,const char *Entrada
     UDP_EnviaA(socket,IP,port,"A0",2);
     return 0;
 }
-int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dominiloc, struct Client *clients, int nClients){
+int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dominiloc, struct Client *clients, int nClients, const char* IPrem, int portRem){
     Log_Escriu(arxiuLog,"Localitzem\n");
     int i=1, j=0;
     char domini[20];
@@ -331,9 +326,15 @@ int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dom
         }
         if (trobat == 0) {
             Log_Escriu(arxiuLog,"Usuari no trobat");
-            LUMI_RLocalitzacio(Sck, MIrem, "0.0.0.0", 0, 2);
+            char buffer[60];
+            int b = sprintf(buffer,"B%d%s%d%s",2, MIrem, 0, "0.0.0.0");
+            UDP_EnviaA(Sck,IPrem,portRem,buffer,b);
         }
-        else if(clients[cont].estat==DESCONNECTAT)LUMI_RLocalitzacio(Sck, MIrem,"0.0.0.0", 0, 1);
+        else if(clients[cont].estat==DESCONNECTAT) {
+            char buffer[60];
+            int b = sprintf(buffer, "B%d%s%d%s", 1, MIrem, 0, "0.0.0.0");
+            UDP_EnviaA(Sck, IPrem, portRem, buffer, b);
+        }
         else{
             Log_Escriu(arxiuLog,"Usuari trobat");
             if(UDP_EnviaA(Sck, clients[cont].IP,clients[cont].port,missatge,longMissatge)==-1) return -1;
