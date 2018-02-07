@@ -377,8 +377,6 @@ int LUMI_ServidorRLoc(int Sck, char * missatge, int longMissatge, const char* do
         j++;
     }
     domini[j]='\0';
-    char bullcrap[50];
-    sscanf(&missatge[2],"%s/%s",domini,bullcrap);
     printf("dom: |%s|\n",domini);
     printf("domLoc: |%s|\n",dominiloc);
     if(strcmp(domini, dominiloc)==0){
