@@ -385,6 +385,7 @@ int LUMI_ServidorRLoc(int Sck, char * missatge, int longMissatge, const char* do
         char IP[16];
         ResolDNSaIP(domini, IP);
         if (UDP_EnviaA(Sck,IP,1714,missatge,longMissatge)==-1) return -1;
+        Log_Escriu(arxiuLog,"Enviada resposta");
     }
     return 1;
 }
