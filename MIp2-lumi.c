@@ -214,14 +214,17 @@ int LUMI_RLocalitzacio(int Sck, const char* IP, int portTCP, int estat){
     char missatge[60];
     int i=1, b;
     int longMissatge = UDP_Rep(Sck,missatge,60);
-    while(missatge[i]!='/') i++;
-    int a=i+1;
-    while(a!=longMissatge){
-        MIrem1[a-(i+1)]=missatge[a];
-        a++;
+    int cursor=0;
+    while(missatge[cursor]!='@')cursor++;
+    cursor++;
+    int cursorini=cursor;
+    while(missatge[cursor]!='/'){
+        MIrem1[cursor-cursorini]=missatge[cursor];
     }
-    MIrem1[a-(i-1)]='\0';
-    b = sprintf(buffer,"B%d%s/%d/%s",estat, MIrem1, portTCP, IP);
+    MIrem1[cursor-cursorini]='\0';
+    b = sprintf(buffer,"B%d%s/%d/%s\0",estat, MIrem1, portTCP, IP);
+    printf("misToSend: %s\n",buffer);
+    printf("misRebut: %s\n",missatge);
     return UDP_Envia(Sck, buffer, b);
 }
 
