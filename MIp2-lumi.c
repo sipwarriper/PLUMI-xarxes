@@ -317,10 +317,10 @@ int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dom
         for(j=1;j<i;j++) nom[j-1]=missatge[j];
         nom[j]='\0';
         //buscar als clients
-        printf("Client a buscar: %s\n",nom);
+        printf("Client a buscar: |%s|\n",nom);
         int trobat=0, cont=0;
         while(trobat==0 && cont<nClients){
-            printf("Candidat: %s\n",clients[cont].nom);
+            printf("Candidat: |%s|\n",clients[cont].nom);
             if(strcmp(nom,clients[cont].nom)==0) trobat = 1;
             else cont++;
         }
