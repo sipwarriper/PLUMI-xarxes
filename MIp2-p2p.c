@@ -36,8 +36,8 @@ int main(int argc,char *argv[])
 	char iprem[16];
 	char iploc[16];
     char ipServ[16];
-    char usuariMIloc[20];
-    char usuariMIrem[20];
+    char usuariMIloc[30];
+    char usuariMIrem[30];
 	char nick[16];
 	char nickRem[16];
 	char linia[300];

@@ -75,6 +75,7 @@ int LUMI_iniServ(const char* nomFitxer, int *nClients, struct Client *client, ch
     FILE * fid = fopen(nomFitxer,"r");
     int count=0;
     fscanf(fid, "%s", domini);
+    domini[29]='\0';
     if (fid==NULL) return -1;
     if (feof(fid) || ferror(fid)) return -1;
     //fgetc(fid);
@@ -130,7 +131,7 @@ int LUMI_connexio(int Sck, const char *IPrem, int portUDPrem){
  * Funció que demana una petició de desregistre al servidor connectat a Sck de l'usuari MI
  * Retorna -2 si el servidor està desconectat; -1 si hi ha error; 0 si el desregistre es correcte; 1 si l'usuari no existeix; 2 si format incorrecte  */
 int LUMI_Desregistre(int Sck, const char * MI){
-    char buffer[21];
+    char buffer[50];
     int b = sprintf(buffer,"D%s", MI);
     int x, i=0, rEnvio;
     int a[1];
@@ -217,10 +218,10 @@ int LUMI_RLocalitzacio(int Sck, const char* IP, int portTCP, int estat){
     int longMissatge = UDP_Rep(Sck,missatge,60);
     printf("TINC LA PETICIO");
     int cursor=0;
-    while(missatge[cursor]!='@')cursor++;
+    while(missatge[cursor]!='/')cursor++;
     cursor++;
     int cursorini=cursor;
-    while(missatge[cursor]!='/'){
+    while(cursor<longMissatge){
         MIrem1[cursor-cursorini]=missatge[cursor];
         cursor++;
     }
@@ -305,6 +306,9 @@ int LUMI_ServidorDesreg(struct Client *clients, int nClients,const char *Entrada
 }
 int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dominiloc, struct Client *clients, int nClients, const char* IPrem, int portRem){
     Log_Escriu(arxiuLog,"Localitzem\n");
+    printf("Missatge: %s\n",missatge);
+    puts(dominiloc);
+    puts("\n");
     int i=1, j=0;
     char domini[20];
     while(missatge[i]!='@') i++;
@@ -314,7 +318,7 @@ int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dom
         i++;
         j++;
     }
-    char MIrem[20];
+    char MIrem[30];
     int a=i+1;
     while(a!=longMissatge){
         MIrem[a-(i+1)]=missatge[a];
@@ -377,8 +381,6 @@ int LUMI_ServidorRLoc(int Sck, char * missatge, int longMissatge, const char* do
         j++;
     }
     domini[j]='\0';
-    char bullcrap[50];
-    sscanf(&missatge[2],"%s/%s",domini,bullcrap);
     printf("dom: |%s|\n",domini);
     printf("domLoc: |%s|\n",dominiloc);
     if(strcmp(domini, dominiloc)==0){
