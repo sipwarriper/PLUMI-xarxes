@@ -42,7 +42,7 @@ int main(int argc,char *argv[])
 	char nickRem[16];
 	char linia[300];
 	int opcio=1;
-    int sckUDP, socUDP;
+    int sckUDP, confirmacioUDP;
  /* Declaració de variables, p.e., int n;                                 */
 	///*burrar i aplicar lo de sota abans dentregar, aixo es per debbugejar*/strcpy(iploc, "192.168.1.42");
 	strcpy(iploc, "0.0.0.0");
@@ -64,9 +64,9 @@ int main(int argc,char *argv[])
 	}
 	//printf("%s\n",ipServ);
     sckUDP=LUMI_crearSocket(iploc,0);
-    socUDP=LUMI_connexio(sckUDP,ipServ,1714);
+    confirmacioUDP=LUMI_connexio(sckUDP,ipServ,1714);
 	//printf("%d\n",sckUDP);
-	if(socUDP==-1||sckUDP==-1){
+	if(confirmacioUDP==-1||sckUDP==-1){
 		printf("Error amb els sockets udp");
 		return -1;
 	}
@@ -88,7 +88,9 @@ int main(int argc,char *argv[])
 		perror("error format incorrecte\n");
 		exit(-1);
 	}
-    int llistaSockets[] = {sesc,socUDP};
+    int llistaSockets[] = {sesc,sckUDP};
+    printf("socket 1 %d\n",llistaSockets[0]);
+    printf("socket 2 %d\n",llistaSockets[1]);
 	while(opcio!=0){
 		printf("entra 0 per sortir, o un qualsevol per iniciar conversació, o espera connexió:\n");
 		sck_rep = MI_HaArribatPetiConv(llistaSockets,2);
@@ -120,7 +122,7 @@ int main(int argc,char *argv[])
 				exit(-1);
 			}
 		}
-		else if(sck_rep==socUDP){
+		else if(sck_rep==sckUDP){
 			puts("REBEM PETICIO DE LOCALITZACIO");
             LUMI_RLocalitzacio(sckUDP,iploc,portloc,0); //estat=0, no necessita mi, el llegeix via missatge q rep (apart de que desde aqui no sabem el mi)
 		}

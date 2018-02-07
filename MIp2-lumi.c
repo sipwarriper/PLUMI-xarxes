@@ -315,7 +315,7 @@ int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dom
         Log_Escriu(arxiuLog,"DOMINI PROPI");
         char nom[50];
         for(j=1;j<i;j++) nom[j-1]=missatge[j];
-        nom[j]='\0';
+        nom[j-1]='\0';
         //buscar als clients
         printf("Client a buscar: |%s|\n",nom);
         int trobat=0, cont=0;
