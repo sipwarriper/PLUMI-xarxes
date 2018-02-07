@@ -361,20 +361,27 @@ int LUMI_ServidorRLoc(int Sck, char * missatge, int longMissatge, const char* do
     }
     domini[j]='\0';
     if(strcmp(domini, dominiloc)==0){
+        Log_Escriu(arxiuLog,"DOMINI PROPI");
         //domini propi, has de buscar el client i enviarli la solicitud!
         char nom[50];
         for(j=2;j<i;j++) nom[j-2]=missatge[j];
         nom[j]='\0';
         //buscar als clients
+        printf("Client a buscar: |%s|\n",nom);
         int trobat=0, cont=0;
         while(trobat==0 && cont<nClients){
+            printf("Candidat: |%s|\n",clients[cont].nom);
             if(strcpy(nom,clients[cont].nom)==0) trobat = 1;
             else cont++;
         }
         if(UDP_EnviaA(Sck, clients[cont].IP,clients[cont].port,missatge,longMissatge)==-1) return -1;
+        else{
+            Log_Escriu(arxiuLog,"Usuari trobat");
+        }
     }
     else {
         //resoldre domini i repetir resposta
+        Log_Escriu(arxiuLog,"Domini extern");
         char IP[16];
         ResolDNSaIP(domini, IP);
         if (UDP_EnviaA(Sck,IP,1714,missatge,longMissatge)==-1) return -1;
