@@ -212,7 +212,7 @@ int LUMI_RLocalitzacio(int Sck, const char* IP, int portTCP, int estat){
         a++;
     }
     MIrem1[a-(i-1)]='\0';
-    b = sprintf(buffer,"B%d%s%d%s",estat, MIrem1, portTCP, IP);
+    b = sprintf(buffer,"B%d%s/%d/%s",estat, MIrem1, portTCP, IP);
     return UDP_Envia(Sck, buffer, b);
 }
 
@@ -327,12 +327,12 @@ int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dom
         if (trobat == 0) {
             Log_Escriu(arxiuLog,"Usuari no trobat");
             char buffer[60];
-            int b = sprintf(buffer,"B%d%s%d%s",2, MIrem, 0, "0.0.0.0");
+            int b = sprintf(buffer,"B%d%s/%d/%s",2, MIrem, 0, "0.0.0.0");
             UDP_EnviaA(Sck,IPrem,portRem,buffer,b);
         }
         else if(clients[cont].estat==DESCONNECTAT) {
             char buffer[60];
-            int b = sprintf(buffer, "B%d%s%d%s", 1, MIrem, 0, "0.0.0.0");
+            int b = sprintf(buffer, "B%d%s/%d/%s", 1, MIrem, 0, "0.0.0.0");
             UDP_EnviaA(Sck, IPrem, portRem, buffer, b);
         }
         else{
