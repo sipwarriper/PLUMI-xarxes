@@ -371,13 +371,13 @@ int LUMI_ServidorRLoc(int Sck, char * missatge, int longMissatge, const char* do
         //domini propi, has de buscar el client i enviarli la solicitud!
         char nom[50];
         for(j=2;j<i;j++) nom[j-2]=missatge[j];
-        nom[j]='\0';
+        nom[j-2]='\0';
         //buscar als clients
         printf("Client a buscar: |%s|\n",nom);
         int trobat=0, cont=0;
         while(trobat==0 && cont<nClients){
             printf("Candidat: |%s|\n",clients[cont].nom);
-            if(strcpy(nom,clients[cont].nom)==0) trobat = 1;
+            if(strcmp(nom,clients[cont].nom)==0) trobat = 1;
             else cont++;
         }
         if(UDP_EnviaA(Sck, clients[cont].IP,clients[cont].port,missatge,longMissatge)==-1) return -1;
