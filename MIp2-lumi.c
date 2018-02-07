@@ -376,7 +376,7 @@ int LUMI_ServidorRLoc(int Sck, char * missatge, int longMissatge, const char* do
         int trobat=0, cont=0;
         while(trobat==0 && cont<nClients){
             printf("Candidat: |%s|\n",clients[cont].nom);
-            if(strcpy(nom,clients[cont].nom)==0) trobat = 1;
+            if(strcmp(nom,clients[cont].nom)==0) trobat = 1;
             else cont++;
         }
         if(UDP_EnviaA(Sck, clients[cont].IP,clients[cont].port,missatge,longMissatge)==-1) return -1;
