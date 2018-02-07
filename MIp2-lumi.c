@@ -182,6 +182,7 @@ int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem, char * IP, 
     x = UDP_Rep(Sck, buffer,60);
     int z=strlen(MIloc)+3; //posicio on comença el port
     char portTemp[7];
+    printf("z= %d\n",z);
     while (buffer[z] != '/'){
         portTemp[z-strlen(MIloc)+3]=buffer[z];
         z++;
@@ -190,11 +191,14 @@ int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem, char * IP, 
     *portTCP = strtol(portTemp, (char **) NULL, 10);
     z++; //(el '/')
     int f = z;
+    printf("z= %d\n",z);
+    printf("x= %d\n",x);
     while(z<x){
         IP[z-f]=buffer[z];
         z++;
     }
     IP[z-f]='\0';
+    printf("z= %d\n",z);
     return ((int)buffer[1]-48); //retorna el codi de resposta!
 
 
