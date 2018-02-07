@@ -189,12 +189,12 @@ int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem, char * IP, 
     portTemp[z-strlen(MIloc)+2]='\0';
     *portTCP = strtol(portTemp, (char **) NULL, 10);
     z++; //(el '/')
-    x = z;
-    while(buffer[z] != '/'){
-        IP[z-x]=buffer[z];
-        z++;
+    int f = z;
+    while(z<x){
+        IP[z-f]=buffer[z];
+        f++;
     }
-    IP[z]='\0';
+    IP[z-f]='\0';
     return ((int)buffer[1]-48); //retorna el codi de resposta!
 
 
