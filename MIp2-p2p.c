@@ -93,41 +93,45 @@ int main(int argc,char *argv[])
     printf("socket 2 %d\n",llistaSockets[1]);
 	while(opcio!=0){
 		printf("entra 0 per sortir, o un qualsevol per iniciar conversació, o espera connexió:\n");
-		sck_rep = MI_HaArribatPetiConv(llistaSockets,2);
-	 /* Expressions, estructures de control, crides a funcions, etc.          */
-		if (sck_rep == 0) { // TECLAT
-			scanf("%i",&opcio);
-			if (opcio==0) break;
-			printf("Entra la adreça MI a la que et vols conectar:\n");
-			scanf("%s",usuariMIrem);
-			int x = LUMI_Localitzacio(sckUDP,usuariMIloc,usuariMIrem,iprem, &portrem);
-			if (x==-1) perror("error Localitzacio\n");
-			else if(x==1) perror("usuari offline\n");
-			else if(x==2) perror("usuari innexistent\n");
-			else if(x==3) perror("usuari ocupat\n");
-            printf("Entrar nick \n");
-            bytes_llegits = MI_Rep(0,nick,sizeof(nick));
-            nick[bytes_llegits-1]='\0';
-			if((scon = MI_DemanaConv(iprem, portrem, iploc,0, nick, nickRem))==-1){
-				printf("error demanaConv\n");
-				exit(-1);
+		int iniciada=0;
+		while(iniciada==0) {
+			sck_rep = MI_HaArribatPetiConv(llistaSockets, 2);
+			/* Expressions, estructures de control, crides a funcions, etc.          */
+
+			if (sck_rep == 0) { // TECLAT
+				scanf("%i", &opcio);
+				iniciada=1;
+				if (opcio == 0) break;
+				printf("Entra la adreça MI a la que et vols conectar:\n");
+				scanf("%s", usuariMIrem);
+				int x = LUMI_Localitzacio(sckUDP, usuariMIloc, usuariMIrem, iprem, &portrem);
+				if (x == -1) perror("error Localitzacio\n");
+				else if (x == 1) perror("usuari offline\n");
+				else if (x == 2) perror("usuari innexistent\n");
+				else if (x == 3) perror("usuari ocupat\n");
+				printf("Entrar nick \n");
+				bytes_llegits = MI_Rep(0, nick, sizeof(nick));
+				nick[bytes_llegits - 1] = '\0';
+				if ((scon = MI_DemanaConv(iprem, portrem, iploc, 0, nick, nickRem)) == -1) {
+					printf("error demanaConv\n");
+					exit(-1);
+				}
+			} else if (sck_rep == sesc) { // SOCKET
+				printf("Entrar nick \n");
+				iniciada=1;
+				bytes_llegits = MI_Rep(0, nick, sizeof(nick));
+				nick[bytes_llegits - 1] = '\0';
+				if ((scon = MI_AcceptaConv(sesc, iprem, &portrem, iploc, portloc, nick, nickRem)) == -1) {
+					printf("error acceptaConv\n");
+					exit(-1);
+				}
+			} else if (sck_rep == sckUDP) {
+				puts("REBEM PETICIO DE LOCALITZACIO");
+				LUMI_RLocalitzacio(sckUDP, iploc, portloc,
+								   0); //estat=0, no necessita mi, el llegeix via missatge q rep (apart de que desde aqui no sabem el mi)
+			} else {
+				printf("LA HAS CAGAO LOKO \n");
 			}
-		}
-		else if(sck_rep == sesc){ // SOCKET
-			printf("Entrar nick \n");
-			bytes_llegits = MI_Rep(0,nick,sizeof(nick));
-			nick[bytes_llegits-1]='\0';
-			if ((scon=MI_AcceptaConv(sesc, iprem, &portrem, iploc, portloc, nick, nickRem))==-1){
-				printf("error acceptaConv\n");
-				exit(-1);
-			}
-		}
-		else if(sck_rep==sckUDP){
-			puts("REBEM PETICIO DE LOCALITZACIO");
-            LUMI_RLocalitzacio(sckUDP,iploc,portloc,0); //estat=0, no necessita mi, el llegeix via missatge q rep (apart de que desde aqui no sabem el mi)
-		}
-		else{
-			printf("LA HAS CAGAO LOKO \n");
 		}
 		iprem[15]='\0';
 		iploc[15]='\0';
