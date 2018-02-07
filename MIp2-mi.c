@@ -376,7 +376,7 @@ int TCP_TrobaAdrSockLoc(int Sck, char *IPloc, int *portTCPloc) {
 	struct sockaddr_in adr;
 	int long_adr = sizeof(adr);
 	if (getsockname(Sck, (struct sockaddr*)&adr, &long_adr) == -1) return -1;
-	*IPloc = inet_ntoa(adr.sin_addr);
+	strcpy(IPloc,inet_ntoa(adr.sin_addr));
 	*portTCPloc = ntohs(adr.sin_port);
 	return 1;
 }

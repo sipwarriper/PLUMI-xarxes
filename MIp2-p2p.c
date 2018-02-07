@@ -112,8 +112,8 @@ int main(int argc,char *argv[])
 				printf("Entrar nick \n");
 				bytes_llegits = MI_Rep(0, nick, sizeof(nick));
 				nick[bytes_llegits - 1] = '\0';
-				printf("IP:%s,port:%d\n",iprem,portrem);
-				if ((scon = MI_DemanaConv(iprem, portrem, iploc, 0, nick, nickRem)) == -1) {
+				printf("IP:%s,port:%d iploc:%s\n",iprem,portrem,iploc);
+				if ((scon = MI_DemanaConv(iprem, portrem, iploc, &portloc, nick, nickRem)) == -1) {
 					printf("error demanaConv\n");
 					exit(-1);
 				}
@@ -122,7 +122,8 @@ int main(int argc,char *argv[])
 				iniciada=1;
 				bytes_llegits = MI_Rep(0, nick, sizeof(nick));
 				nick[bytes_llegits - 1] = '\0';
-				if ((scon = MI_AcceptaConv(sesc, iprem, &portrem, iploc, portloc, nick, nickRem)) == -1) {
+				printf("NICK ENTRAT\n");
+				if ((scon = MI_AcceptaConv(sesc, iprem, &portrem, iploc, &portloc, nick, nickRem)) == -1) {
 					printf("error acceptaConv\n");
 					exit(-1);
 				}
