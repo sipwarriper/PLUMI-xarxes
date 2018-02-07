@@ -180,11 +180,12 @@ int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem, char * IP, 
     if (rEnvio==-2) return -2;
     x = UDP_Rep(Sck, buffer,60);
     int z=strlen(MIloc)+3; //posicio on comença el port
-    char portTemp[6];
+    char portTemp[7];
     while (buffer[z] != '/'){
         portTemp[z-strlen(MIloc)+3]=buffer[z];
         z++;
     }
+    portTemp[z-strlen(MIloc)+2]='\0';
     *portTCP = strtol(portTemp, (char **) NULL, 10);
     z++; //(el '/')
     x = z;
