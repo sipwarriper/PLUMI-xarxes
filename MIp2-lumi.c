@@ -178,6 +178,7 @@ int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem, char * IP, 
         i++;
     }while(rEnvio==-2 && i<5);
     if (rEnvio==-2) return -2;
+    puts("HEM REBUT RESPOSTA!\n");
     x = UDP_Rep(Sck, buffer,60);
     int z=strlen(MIloc)+3; //posicio on comença el port
     char portTemp[7];
