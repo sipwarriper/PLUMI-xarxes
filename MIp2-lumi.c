@@ -178,8 +178,9 @@ int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem, char * IP, 
         i++;
     }while(rEnvio==-2 && i<5);
     if (rEnvio==-2) return -2;
+    else if(rEnvio==-1) return -1;
     puts("HEM REBUT RESPOSTA!\n");
-    x = UDP_Rep(Sck, buffer,60);
+    x = UDP_Rep(rEnvio, buffer,60);
     printf("PAKET:%s",buffer);
     int z=strlen(MIloc)+3; //posicio on comença el port
     char portTemp[7];
@@ -214,12 +215,14 @@ int LUMI_RLocalitzacio(int Sck, const char* IP, int portTCP, int estat){
     char missatge[60];
     int i=1, b;
     int longMissatge = UDP_Rep(Sck,missatge,60);
+    printf("TINC LA PETICIO");
     int cursor=0;
     while(missatge[cursor]!='@')cursor++;
     cursor++;
     int cursorini=cursor;
     while(missatge[cursor]!='/'){
         MIrem1[cursor-cursorini]=missatge[cursor];
+        cursor++;
     }
     MIrem1[cursor-cursorini]='\0';
     b = sprintf(buffer,"B%d%s/%d/%s\0",estat, MIrem1, portTCP, IP);
@@ -363,7 +366,8 @@ int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dom
 
 int LUMI_ServidorRLoc(int Sck, char * missatge, int longMissatge, const char* dominiloc, struct Client *clients, int nClients){
     Log_Escriu(arxiuLog,"Tornem resposta a localització\n");
-    int i=2, j=0;
+    printf("Missatge: %s\n",missatge);
+    int i=0, j=0;
     char domini[20];
     while(missatge[i]!='@') i++;
     i++;
@@ -373,10 +377,10 @@ int LUMI_ServidorRLoc(int Sck, char * missatge, int longMissatge, const char* do
         j++;
     }
     domini[j]='\0';
-    puts(domini);
-    puts("\n");
-    puts(dominiloc);
-    puts("\n");
+    char bullcrap[50];
+    sscanf(&missatge[2],"%s/%s",domini,bullcrap);
+    printf("dom: |%s|\n",domini);
+    printf("domLoc: |%s|\n",dominiloc);
     if(strcmp(domini, dominiloc)==0){
         Log_Escriu(arxiuLog,"DOMINI PROPI");
         //domini propi, has de buscar el client i enviarli la solicitud!
@@ -391,6 +395,7 @@ int LUMI_ServidorRLoc(int Sck, char * missatge, int longMissatge, const char* do
             if(strcmp(nom,clients[cont].nom)==0) trobat = 1;
             else cont++;
         }
+        printf("envio: %s \n", missatge);
         if(UDP_EnviaA(Sck, clients[cont].IP,clients[cont].port,missatge,longMissatge)==-1) return -1;
         else{
             Log_Escriu(arxiuLog,"Usuari trobat");
@@ -401,6 +406,7 @@ int LUMI_ServidorRLoc(int Sck, char * missatge, int longMissatge, const char* do
         Log_Escriu(arxiuLog,"Domini extern");
         char IP[16];
         ResolDNSaIP(domini, IP);
+        printf("envio: %s \n", missatge);
         if (UDP_EnviaA(Sck,IP,1714,missatge,longMissatge)==-1) return -1;
         Log_Escriu(arxiuLog,"Enviada resposta");
     }
@@ -575,7 +581,8 @@ int HaArribatAlgunaCosaEnTemps(const int *LlistaSck, int LongLlistaSck, int Temp
     }
     if (Temps==-1) if (a=(select(descmax + 1, &conjunt, NULL, NULL, NULL)) == -1) return -1;
     else{
-        t.tv_usec=Temps*1000;
+        t.tv_sec = Temps/1000;
+        t.tv_usec = (Temps%1000)*1000;
         if (a=(select(descmax + 1, &conjunt, NULL, NULL, &t)) == -1) return -1;
     }
     //si sha de comprovar tb el teclat mirar primer desde aqui

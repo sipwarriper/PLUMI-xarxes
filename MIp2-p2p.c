@@ -129,8 +129,7 @@ int main(int argc,char *argv[])
 				}
 			} else if (sck_rep == sckUDP) {
 				puts("REBEM PETICIO DE LOCALITZACIO");
-				LUMI_RLocalitzacio(sckUDP, iploc, portloc,
-								   0); //estat=0, no necessita mi, el llegeix via missatge q rep (apart de que desde aqui no sabem el mi)
+				LUMI_RLocalitzacio(sckUDP, iploc, portloc,0); //estat=0, no necessita mi, el llegeix via missatge q rep (apart de que desde aqui no sabem el mi)
 			} else {
 				printf("LA HAS CAGAO LOKO \n");
 			}
