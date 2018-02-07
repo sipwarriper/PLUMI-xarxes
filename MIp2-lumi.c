@@ -354,12 +354,17 @@ int LUMI_ServidorRLoc(int Sck, char * missatge, int longMissatge, const char* do
     int i=2, j=0;
     char domini[20];
     while(missatge[i]!='@') i++;
+    i++;
     while(missatge[i]!='/'){
         domini[j] = missatge[i];
         i++;
         j++;
     }
     domini[j]='\0';
+    puts(domini);
+    puts("\n");
+    puts(dominiloc);
+    puts("\n");
     if(strcmp(domini, dominiloc)==0){
         Log_Escriu(arxiuLog,"DOMINI PROPI");
         //domini propi, has de buscar el client i enviarli la solicitud!
