@@ -142,7 +142,7 @@ int LUMI_Desregistre(int Sck, const char * MI){
         i++;
     }while(rEnvio==-2 && i<5);
     if (rEnvio==-2) return -2;
-    x = UDP_Rep(Sck, buffer,50);
+    if ((x = UDP_Rep(Sck, buffer,50))==-1)return -1;
     //printf("%d",((int)buffer[1]-48));
     return ((int)buffer[1]-48);
 }
@@ -163,6 +163,7 @@ int LUMI_Registre(int Sck, const char * MI){
     }while(rEnvio==-2 && i<5);
     if (rEnvio==-2) return -2;
     x = UDP_Rep(Sck, buffer,50);
+    if ((x = UDP_Rep(Sck, buffer,50))==-1)return -1;
 	//printf("%d",((int)buffer[1]-48));
     return ((int)buffer[1]-48);
 }
@@ -181,7 +182,7 @@ int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem, char * IP, 
     if (rEnvio==-2) return -2;
     else if(rEnvio==-1) return -1;
     puts("HEM REBUT RESPOSTA!\n");
-    x = UDP_Rep(rEnvio, buffer,60);
+    if ((x = UDP_Rep(Sck, buffer,60))==-1)return -1;
     printf("PAKET:%s",buffer);
     int z=strlen(MIloc)+3; //posicio on comença el port
     char portTemp[7];
