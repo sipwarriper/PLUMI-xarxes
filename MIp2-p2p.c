@@ -100,15 +100,31 @@ int main(int argc,char *argv[])
 
 			if (sck_rep == 0) { // TECLAT
 				scanf("%i", &opcio);
-				iniciada=1;
 				if (opcio == 0) break;
 				printf("Entra la adreça MI a la que et vols conectar:\n");
 				scanf("%s", usuariMIrem);
 				int x = LUMI_Localitzacio(sckUDP, usuariMIloc, usuariMIrem, iprem, &portrem);
-				if (x == -1) perror("error Localitzacio\n");
-				else if (x == 1) perror("usuari offline\n");
-				else if (x == 2) perror("usuari innexistent\n");
-				else if (x == 3) perror("usuari ocupat\n");
+				if (x == -1) {
+                    perror("error Localitzacio\n");
+                    break;
+                }
+				else if (x == -2) {
+                    perror("servidor LUMI apagat\n");
+                    break;
+                }
+				else if (x == 1) {
+                    perror("usuari offline\n");
+                    break;
+                }
+				else if (x == 2) {
+                    perror("usuari innexistent\n");
+                    break;
+                }
+				else if (x == 3) {
+                    perror("usuari ocupat\n");
+                    break;
+                }
+                iniciada=1;
 				printf("Entrar nick \n");
 				bytes_llegits = MI_Rep(0, nick, sizeof(nick));
 				nick[bytes_llegits - 1] = '\0';
@@ -119,7 +135,6 @@ int main(int argc,char *argv[])
 				}
 			} else if (sck_rep == sesc) { // SOCKET
 				printf("Entrar nick \n");
-				iniciada=1;
 				bytes_llegits = MI_Rep(0, nick, sizeof(nick));
 				nick[bytes_llegits - 1] = '\0';
 				printf("NICK ENTRAT\n");
@@ -127,6 +142,7 @@ int main(int argc,char *argv[])
 					printf("error acceptaConv\n");
 					exit(-1);
 				}
+                iniciada=1;
 			} else if (sck_rep == sckUDP) {
 				puts("REBEM PETICIO DE LOCALITZACIO");
 				LUMI_RLocalitzacio(sckUDP, iploc, portloc,0); //estat=0, no necessita mi, el llegeix via missatge q rep (apart de que desde aqui no sabem el mi)
@@ -134,24 +150,26 @@ int main(int argc,char *argv[])
 				printf("LA HAS CAGAO LOKO \n");
 			}
 		}
-		iprem[15]='\0';
-		iploc[15]='\0';
-		printf("Remot IP@port: %s@%u\n", iprem,portrem);
-		printf("conversi\n");
-		do{
-			sckRep_Conv = MI_HaArribatLinia(scon);
-			if (sckRep_Conv==0){ //teclat
-				bytes_llegits = read(0,linia,sizeof(linia));
-				if(linia[0] == ':') break;
-				linia[bytes_llegits-1]='\0'; //perpoder fer strlen, si passa salt de linia, fer -1
-				MI_EnviaLinia(scon, linia);
-			}else{ //socket
-				bytes_llegits = MI_RepLinia(sckRep_Conv, linia);
-				if(bytes_llegits!=-2) printf("%s: %s\n", nickRem, linia);
-			}
+        if (iniciada==1){
+            iprem[15]='\0';
+            iploc[15]='\0';
+            printf("Remot IP@port: %s@%u\n", iprem,portrem);
+            printf("conversi\n");
+            do{
+                sckRep_Conv = MI_HaArribatLinia(scon);
+                if (sckRep_Conv==0){ //teclat
+                    bytes_llegits = read(0,linia,sizeof(linia));
+                    if(linia[0] == ':') break;
+                    linia[bytes_llegits-1]='\0'; //perpoder fer strlen, si passa salt de linia, fer -1
+                    MI_EnviaLinia(scon, linia);
+                }else{ //socket
+                    bytes_llegits = MI_RepLinia(sckRep_Conv, linia);
+                    if(bytes_llegits!=-2) printf("%s: %s\n", nickRem, linia);
+                }
 
-		}while(bytes_llegits!=-2);
-		MI_AcabaConv(scon);
+            }while(bytes_llegits!=-2);
+            MI_AcabaConv(scon);
+        }
 	}
 
 	MI_AcabaEscPetiRemConv(sesc); //Tencar escolta al tencar bucle
@@ -161,7 +179,7 @@ int main(int argc,char *argv[])
         exit(-1);
     }
     else if(opReg==-1) {
-        perror("error registre\n");
+        perror("error Desregistre\n");
         exit(-1);
     }
 
