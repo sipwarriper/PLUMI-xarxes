@@ -162,7 +162,6 @@ int LUMI_Registre(int Sck, const char * MI){
         i++;
     }while(rEnvio==-2 && i<5);
     if (rEnvio==-2) return -2;
-    x = UDP_Rep(Sck, buffer,50);
     if ((x = UDP_Rep(Sck, buffer,50))==-1)return -1;
 	//printf("%d",((int)buffer[1]-48));
     return ((int)buffer[1]-48);
@@ -206,8 +205,6 @@ int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem, char * IP, 
     IP[z-f]='\0';
     printf("z= %d\n",z);
     return ((int)buffer[1]-48); //retorna el codi de resposta!
-
-
 }
 
 
@@ -228,6 +225,28 @@ int LUMI_RLocalitzacio(int Sck, const char* IP, int portTCP, int estat){
     }
     MIrem1[cursor-cursorini]='\0';
     b = sprintf(buffer,"B%d%s/%d/%s\0",estat, MIrem1, portTCP, IP);
+    printf("misToSend: %s\n",buffer);
+    printf("misRebut: %s\n",missatge);
+    return UDP_Envia(Sck, buffer, b);
+}
+
+int LUMI_RLocOcupat(int Sck){
+    char MIrem1[30];
+    char buffer[60];
+    char missatge[60];
+    int i=1, b;
+    int longMissatge = UDP_Rep(Sck,missatge,60);
+    printf("TINC LA PETICIO");
+    int cursor=0;
+    while(missatge[cursor]!='/')cursor++;
+    cursor++;
+    int cursorini=cursor;
+    while(cursor<longMissatge){
+        MIrem1[cursor-cursorini]=missatge[cursor];
+        cursor++;
+    }
+    MIrem1[cursor-cursorini]='\0';
+    b = sprintf(buffer,"B%d%s/%d/%s\0",3, MIrem1, 0, "0.0.0.0");
     printf("misToSend: %s\n",buffer);
     printf("misRebut: %s\n",missatge);
     return UDP_Envia(Sck, buffer, b);

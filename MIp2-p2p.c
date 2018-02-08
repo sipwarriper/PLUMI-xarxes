@@ -156,16 +156,21 @@ int main(int argc,char *argv[])
             printf("Remot IP@port: %s@%u\n", iprem,portrem);
             printf("conversi\n");
             do{
-                sckRep_Conv = MI_HaArribatLinia(scon);
+                int llistaSocketsConversa[]={scon,sckUDP};
+				sckRep_Conv=MI_HaArribatPetiConv(llistaSocketsConversa, 2);
+				//sckRep_Conv = MI_HaArribatLinia(scon);
                 if (sckRep_Conv==0){ //teclat
                     bytes_llegits = read(0,linia,sizeof(linia));
                     if(linia[0] == ':') break;
                     linia[bytes_llegits-1]='\0'; //perpoder fer strlen, si passa salt de linia, fer -1
                     MI_EnviaLinia(scon, linia);
-                }else{ //socket
+                }else if(sckRep_Conv==scon){ //socket
                     bytes_llegits = MI_RepLinia(sckRep_Conv, linia);
                     if(bytes_llegits!=-2) printf("%s: %s\n", nickRem, linia);
                 }
+				else{//
+					LUMI_RLocOcupat(sckUDP);
+				}
 
             }while(bytes_llegits!=-2);
             MI_AcabaConv(scon);
