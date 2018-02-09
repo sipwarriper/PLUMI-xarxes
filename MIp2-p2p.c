@@ -43,6 +43,7 @@ int main(int argc,char *argv[])
 	char linia[300];
 	int opcio=1;
     int sckUDP, confirmacioUDP;
+    LUMI_iniClient();
  /* Declaració de variables, p.e., int n;                                 */
 	///*burrar i aplicar lo de sota abans dentregar, aixo es per debbugejar*/strcpy(iploc, "192.168.1.42");
 	strcpy(iploc, "0.0.0.0");
@@ -187,6 +188,6 @@ int main(int argc,char *argv[])
         perror("error Desregistre\n");
         exit(-1);
     }
-
+    LUMI_finiClient();
 	return 0;
  }
