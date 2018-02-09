@@ -90,8 +90,6 @@ int main(int argc,char *argv[])
 		exit(-1);
 	}
     int llistaSockets[] = {sesc,sckUDP};
-    printf("socket 1 %d\n",llistaSockets[0]);
-    printf("socket 2 %d\n",llistaSockets[1]);
 	while(opcio!=0){
 		printf("entra 0 per sortir, o un qualsevol per iniciar conversació, o espera connexió:\n");
 		int iniciada=0;
@@ -145,17 +143,16 @@ int main(int argc,char *argv[])
 				}
                 iniciada=1;
 			} else if (sck_rep == sckUDP) {
-				puts("REBEM PETICIO DE LOCALITZACIO");
 				LUMI_RLocalitzacio(sckUDP, iploc, portloc,0); //estat=0, no necessita mi, el llegeix via missatge q rep (apart de que desde aqui no sabem el mi)
 			} else {
-				printf("LA HAS CAGAO LOKO \n");
+				printf("RIP \n");
 			}
 		}
         if (iniciada==1){
             iprem[15]='\0';
             iploc[15]='\0';
             printf("Remot IP@port: %s@%u\n", iprem,portrem);
-            printf("conversi\n");
+            printf("Conversi (envii ':' per a acabar\n");
             do{
                 int llistaSocketsConversa[]={scon,sckUDP};
 				sckRep_Conv=MI_HaArribatPetiConv(llistaSocketsConversa, 2);
