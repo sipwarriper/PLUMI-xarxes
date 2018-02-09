@@ -150,9 +150,9 @@ int LUMI_Desregistre(int Sck, const char * MI){
             Log_Escriu("  Enviament de paquet fallit");
             return -1;
         }
-        rEnvio = HaArribatAlgunaCosaEnTemps(a,1,50);
+        if ((rEnvio = HaArribatAlgunaCosaEnTemps(a,1,50))==-1) return -1;
         i++;
-    }while(rEnvio==-2 && i<5);
+    }while(rEnvio!=Sck && i<5);
     if (rEnvio==-2) return -2;
     if ((x = UDP_Rep(Sck, buffer,50))==-1){
         Log_Escriu("  No hem rebut correctement el paquet");
@@ -199,9 +199,9 @@ int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem, char * IP, 
             Log_Escriu("  Enviament de paquet fallit");
             return -1;
         }
-        rEnvio = HaArribatAlgunaCosaEnTemps(a,1,50);
+        if ((rEnvio = HaArribatAlgunaCosaEnTemps(a,1,50))==-1) return -1;
         i++;
-    }while(rEnvio==-2 && i<5);
+    }while(rEnvio!=Sck && i<5);
     if (rEnvio==-2){ Log_Escriu("  Timeout");
         return -2;
     }
