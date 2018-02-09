@@ -42,14 +42,15 @@ int UDP_Envia(int Sck, const char *SeqBytes, int LongSeqBytes);
 int UDP_Rep(int Sck, char *SeqBytes, int LongSeqBytes);
 int UDP_TrobaAdrSockRem(int Sck, char *IPrem, int *portUDPrem);
 int HaArribatAlgunaCosaEnTemps(const int *LlistaSck, int LongLlistaSck, int Temps);
-FILE* Log_CreaFitx();
+FILE* Log_CreaFitx(const char* nomArxiu);
 int Log_Escriu(const char *MissLog);
 int Log_TancaFitx();
 
-FILE* arxiuLog;
+FILE *arxiuLog;
+char nomLog[30];
 
 int LUMI_iniClient(){
-    arxiuLog=Log_CreaFitx();
+    arxiuLog=Log_CreaFitx("logClient.txt");
 }
 int LUMI_finiClient(){
     Log_Escriu("Desconectem");
@@ -97,7 +98,7 @@ int LUMI_iniServ(const char* nomFitxer, int *nClients, struct Client *client, ch
     }
     *nClients = count;
     fclose(fid);
-    arxiuLog=Log_CreaFitx();
+    arxiuLog=Log_CreaFitx("logServ.txt");
     Log_Escriu("Servidor inicialitzat");
     return 0;
 }
@@ -646,9 +647,10 @@ int ResolDNSaIP(const char *NomDNS, char *IP)
 /* en '\0') d'una longitud qualsevol.                                     */
 /* Retorna -1 si hi ha error; l'identificador del fitxer creat si tot va  */
 /* bé.                                                                    */
-FILE* Log_CreaFitx()
+FILE* Log_CreaFitx(const char *nomArxiu)
 {
-    FILE* pFile= fopen("log.txt","wb");
+    FILE* pFile= fopen(nomArxiu,"wb");
+    strcpy(nomLog,nomArxiu);
     return pFile;
 }
 
@@ -664,7 +666,7 @@ int Log_Escriu(const char *MissLog)
         fprintf(arxiuLog,MissLog);
         fprintf(arxiuLog,"\n");
         fclose(arxiuLog);
-        arxiuLog = fopen("log.txt","ab");
+        arxiuLog = fopen(nomLog,"ab");
         return strlen(MissLog);
     }
     else return -1;
