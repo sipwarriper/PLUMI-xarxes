@@ -152,7 +152,7 @@ int main(int argc,char *argv[])
             iprem[15]='\0';
             iploc[15]='\0';
             printf("Remot IP@port: %s@%u\n", iprem,portrem);
-            printf("Conversi (envii ':' per a acabar\n");
+            printf("Conversi (envii ':' per a acabar)\n");
             do{
                 int llistaSocketsConversa[]={scon,sckUDP};
 				sckRep_Conv=MI_HaArribatPetiConv(llistaSocketsConversa, 2);
