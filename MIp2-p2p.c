@@ -47,6 +47,7 @@ int main(int argc,char *argv[])
  /* Declaració de variables, p.e., int n;                                 */
 	///*burrar i aplicar lo de sota abans dentregar, aixo es per debbugejar*/strcpy(iploc, "192.168.1.42");
 	strcpy(iploc, "0.0.0.0");
+    sckUDP=LUMI_crearSocket(iploc,0);
 	if ((sesc = MI_IniciaEscPetiRemConv(0,&portloc, iploc)) == -1) {
 		perror("socket\n");
 		exit(-1);
@@ -63,10 +64,9 @@ int main(int argc,char *argv[])
 		perror("error al resoldre DNS\n");
 		exit(1);
 	}
-	//printf("%s\n",ipServ);
-    sckUDP=LUMI_crearSocket(iploc,0);
+	printf("%s\n",ipServ);
     confirmacioUDP=LUMI_connexio(sckUDP,ipServ,1714);
-	//printf("%d\n",sckUDP);
+	printf("%d\n",sckUDP);
 	if(confirmacioUDP==-1||sckUDP==-1){
 		printf("Error amb els sockets udp");
 		return -1;
