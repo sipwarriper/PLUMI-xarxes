@@ -40,11 +40,8 @@ int main(int argc,char *argv[])
 
     int resposta;
     while(1){
-		
-        printf("CICLE %s\n",domini);
         resposta=LUMI_EsperaMissatge(socket);
         if(resposta!=-1){
-			printf("HE REBUT ALGO!!!!!!!!!! \n");
             char missatge[MAXMISSATGE];
             memset(missatge,'\0',sizeof(missatge));
             int portClient;

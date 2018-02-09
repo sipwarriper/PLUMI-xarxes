@@ -42,17 +42,18 @@ int UDP_Envia(int Sck, const char *SeqBytes, int LongSeqBytes);
 int UDP_Rep(int Sck, char *SeqBytes, int LongSeqBytes);
 int UDP_TrobaAdrSockRem(int Sck, char *IPrem, int *portUDPrem);
 int HaArribatAlgunaCosaEnTemps(const int *LlistaSck, int LongLlistaSck, int Temps);
-FILE* Log_CreaFitx(const char *NomFitxLog);
-int Log_Escriu(FILE* FitxLog, const char *MissLog);
-int Log_TancaFitx(FILE* FitxLog);
+FILE* Log_CreaFitx();
+int Log_Escriu(const char *MissLog);
+int Log_TancaFitx();
 
 FILE* arxiuLog;
 
 int LUMI_iniClient(){
-    arxiuLog=Log_CreaFitx("log.txt");
+    arxiuLog=Log_CreaFitx();
 }
 int LUMI_finiClient(){
-    Log_TancaFitx(arxiuLog);
+    Log_Escriu("Desconectem");
+    Log_TancaFitx();
 }
 
 /* Definicio de funcions EXTERNES, és a dir, d'aquelles que en altres     */
@@ -69,7 +70,7 @@ int LUMI_finiClient(){
 /* Retorna -1 si hi ha error; l’identificador del socket creat si tot     */
 /* va bé.                                                                 */
 int LUMI_crearSocket(const char *IPloc, int portUDPloc){
-    Log_Escriu(arxiuLog,"Creem socket");
+    Log_Escriu("Creem socket");
     return UDP_CreaSock(IPloc, portUDPloc);
 }
 
@@ -96,8 +97,8 @@ int LUMI_iniServ(const char* nomFitxer, int *nClients, struct Client *client, ch
     }
     *nClients = count;
     fclose(fid);
-    arxiuLog=Log_CreaFitx("log.txt");
-    Log_Escriu(arxiuLog,"Servidor inicialitzat");
+    arxiuLog=Log_CreaFitx();
+    Log_Escriu("Servidor inicialitzat");
     return 0;
 }
 int LUMI_finiServ(){
@@ -110,7 +111,7 @@ int LUMI_finiServ(){
  * Funció que actualitza el fitxer de configuració a fid amb l'estat actual dels clients
  * Retorna 1   */
 int LUMI_ActualitzarFitxerRegistre(const struct Client *clients, int nClients, const char *nomFitxer, const char* domini){
-    Log_Escriu(arxiuLog,"Actualitzem registre");
+    Log_Escriu("Actualitzem registre");
     int fid = open(nomFitxer, O_CREAT|O_TRUNC|O_WRONLY);
 	int writeB = write(fid, domini, strlen(domini));
     int i;
@@ -129,7 +130,7 @@ int LUMI_ActualitzarFitxerRegistre(const struct Client *clients, int nClients, c
  * Funció per demanar connexió UDP a un servidor que deixa en estat -established-
  * Retorna -1 si hi ha error; un valor positiu qualsevol si tot va bé.    */
 int LUMI_connexio(int Sck, const char *IPrem, int portUDPrem){
-    Log_Escriu(arxiuLog,"Demanem connexio");
+    Log_Escriu("Demanem connexio");
     return UDP_DemanaConnexio(Sck,IPrem, portUDPrem);
 }
 
@@ -137,7 +138,7 @@ int LUMI_connexio(int Sck, const char *IPrem, int portUDPrem){
  * Funció que demana una petició de desregistre al servidor connectat a Sck de l'usuari MI
  * Retorna -2 si el servidor està desconectat; -1 si hi ha error; 0 si el desregistre es correcte; 1 si l'usuari no existeix; 2 si format incorrecte  */
 int LUMI_Desregistre(int Sck, const char * MI){
-    Log_Escriu(arxiuLog,"Demanem desregistre");
+    Log_Escriu("Demanem desregistre");
     char buffer[50];
     int b = sprintf(buffer,"D%s", MI);
     int x, i=0, rEnvio;
@@ -145,7 +146,7 @@ int LUMI_Desregistre(int Sck, const char * MI){
     a[0]=Sck;
     do{
         if ((x = UDP_Envia(Sck, buffer, b)) == -1){
-            Log_Escriu(arxiuLog,"  Enviament de paquet fallit");
+            Log_Escriu("  Enviament de paquet fallit");
             return -1;
         }
         rEnvio = HaArribatAlgunaCosaEnTemps(a,1,50);
@@ -153,7 +154,7 @@ int LUMI_Desregistre(int Sck, const char * MI){
     }while(rEnvio==-2 && i<5);
     if (rEnvio==-2) return -2;
     if ((x = UDP_Rep(Sck, buffer,50))==-1){
-        Log_Escriu(arxiuLog,"  No hem rebut correctement el paquet");
+        Log_Escriu("  No hem rebut correctement el paquet");
         return -1;
     }
     return ((int)buffer[1]-48);
@@ -163,7 +164,7 @@ int LUMI_Desregistre(int Sck, const char * MI){
  * Funció que demana una petició de registre al servidor connectat a Sck de l'usuari MI
  * Retorna -2 si el servidor està desconectat; -1 si hi ha error; 0 si el desregistre es correcte; 1 si l'usuari no existeix; 2 si format incorrecte  */
 int LUMI_Registre(int Sck, const char * MI){
-    Log_Escriu(arxiuLog,"Demanem registre");
+    Log_Escriu("Demanem registre");
     char buffer[50];
     int b = sprintf(buffer,"R%s", MI);
     int x, i=0, rEnvio;
@@ -171,7 +172,7 @@ int LUMI_Registre(int Sck, const char * MI){
     a[0]=Sck;
     do{
         if ((x = UDP_Envia(Sck, buffer, b)) == -1){
-            Log_Escriu(arxiuLog,"  Enviament de paquet fallit");
+            Log_Escriu("  Enviament de paquet fallit");
             return -1;
         }
         rEnvio = HaArribatAlgunaCosaEnTemps(a,1,50);
@@ -179,14 +180,14 @@ int LUMI_Registre(int Sck, const char * MI){
     }while(rEnvio==-2 && i<5);
     if (rEnvio==-2) return -2;
     if ((x = UDP_Rep(Sck, buffer,50))==-1){
-        Log_Escriu(arxiuLog,"  No hem rebut correctement el paquet");
+        Log_Escriu("  No hem rebut correctement el paquet");
         return -1;
     }
     return ((int)buffer[1]-48);
 }
 
 int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem, char * IP, int * portTCP){
-    Log_Escriu(arxiuLog,"Demanem localització");
+    Log_Escriu("Demanem localització");
     char buffer[60];
     int b = sprintf(buffer,"L%s/%s",MIrem, MIloc);
     int x, i=0, rEnvio;
@@ -194,21 +195,21 @@ int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem, char * IP, 
     a[0]=Sck;
     do{
         if ((x = UDP_Envia(Sck, buffer, b)) == -1){
-            Log_Escriu(arxiuLog,"  Enviament de paquet fallit");
+            Log_Escriu("  Enviament de paquet fallit");
             return -1;
         }
         rEnvio = HaArribatAlgunaCosaEnTemps(a,1,50);
         i++;
     }while(rEnvio==-2 && i<5);
-    if (rEnvio==-2){ Log_Escriu(arxiuLog,"  Timeout");
+    if (rEnvio==-2){ Log_Escriu("  Timeout");
         return -2;
     }
     else if(rEnvio==-1) {
-        Log_Escriu(arxiuLog, "  Error al rebre paquet");
+        Log_Escriu( "  Error al rebre paquet");
         return -1;
     }
     if ((x = UDP_Rep(Sck, buffer,60))==-1){
-        Log_Escriu(arxiuLog,"  No hem rebut correctement el paquet");
+        Log_Escriu("  No hem rebut correctement el paquet");
         return -1;
     }
     int z=strlen(MIloc)+3; //posicio on comença el port
@@ -232,7 +233,7 @@ int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem, char * IP, 
 
 
 int LUMI_RLocalitzacio(int Sck, const char* IP, int portTCP, int estat){
-    Log_Escriu(arxiuLog,"Tornem resposta de localització");
+    Log_Escriu("Tornem resposta de localització");
     char MIrem1[30];
     char buffer[60];
     char missatge[60];
@@ -252,7 +253,7 @@ int LUMI_RLocalitzacio(int Sck, const char* IP, int portTCP, int estat){
 }
 
 int LUMI_RLocOcupat(int Sck){
-    Log_Escriu(arxiuLog,"Responem que estem ocupats");
+    Log_Escriu("Responem que estem ocupats");
     char MIrem1[30];
     char buffer[60];
     char missatge[60];
@@ -275,7 +276,7 @@ int LUMI_RLocOcupat(int Sck){
  * Funció que descxifra quina sol·licitud li han donat al servidor
  * Retorna -1 si no coneix la petició; 0 si és desregistre, 1 si és Registre, 2 si es localització i 3 si es resposta a Localització */
 int LUMI_ServDesxifrarRebut(const char *missatge) {
-    Log_Escriu(arxiuLog,"Desxifrem la sol·licitud");
+    Log_Escriu("Desxifrem la sol·licitud");
     char a = missatge[0];
     if(a=='D') return DESREGISTRE;
     else if(a=='R') return REGISTRE;
@@ -287,15 +288,15 @@ int LUMI_ServDesxifrarRebut(const char *missatge) {
  * Funció que fa el registre d'un client al servidor, i envia la resposta adient al socket inicial, també actualitza el arxiu de clients
  * */
 int LUMI_ServidorReg(struct Client *clients, int nClients,const char *Entrada,  const char *IP, int port, const char *nomFitxer,const char* domini, int socket) {
-    Log_Escriu(arxiuLog,"Fem registre");
+    Log_Escriu("Fem registre");
     if (Entrada[0] != 'R') {
-        Log_Escriu(arxiuLog,"  Paquet rebut amb tipus incorrecte");
+        Log_Escriu("  Paquet rebut amb tipus incorrecte");
         UDP_EnviaA(socket, IP, port, "A2", 2);
         return 2;
     }
     char nom[150];
     strcpy(nom,&Entrada[1]);
-    Log_Escriu(arxiuLog,&Entrada[1]);
+    Log_Escriu(&Entrada[1]);
     int acabat=0, i=0;
     while (acabat==0 && i<nClients){
         if(strcmp(clients[i].nom,nom)==0){
@@ -307,11 +308,11 @@ int LUMI_ServidorReg(struct Client *clients, int nClients,const char *Entrada,  
         i++;
     }
     if(acabat==0) {
-        Log_Escriu(arxiuLog,"  Usuari inexistent");
+        Log_Escriu("  Usuari inexistent");
         UDP_EnviaA(socket,IP,port,"A1",2);
         return 1;
     }
-    Log_Escriu(arxiuLog,"  Usuari trobat");
+    Log_Escriu("  Usuari trobat");
     UDP_EnviaA(socket,IP,port,"A0",2);
     LUMI_ActualitzarFitxerRegistre(clients,nClients,nomFitxer,domini);
     return 0;
@@ -321,7 +322,7 @@ int LUMI_ServidorReg(struct Client *clients, int nClients,const char *Entrada,  
  * Funció que fa el desregistre d'un client al servidor, i envia la resposta adient al socket inicial, també actualitza el arxiu de clients
  * */
 int LUMI_ServidorDesreg(struct Client *clients, int nClients,const char *Entrada, const char *IP, int port,const char *nomFitxer , const char* domini, int socket){
-    Log_Escriu(arxiuLog,"Fem desregistre");
+    Log_Escriu("Fem desregistre");
     if(Entrada[0]!='D'){
         UDP_EnviaA(socket, IP, port, "A2", 2);
         return 2;
@@ -337,7 +338,7 @@ int LUMI_ServidorDesreg(struct Client *clients, int nClients,const char *Entrada
         i++;
     }
     if(acabat==0) {
-        Log_Escriu(arxiuLog,"  No hem trobat el client");
+        Log_Escriu("  No hem trobat el client");
         UDP_EnviaA(socket,IP,port,"A1",2);
         return 1;
     }
@@ -346,7 +347,7 @@ int LUMI_ServidorDesreg(struct Client *clients, int nClients,const char *Entrada
     return 0;
 }
 int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dominiloc, struct Client *clients, int nClients, const char* IPrem, int portRem){
-    Log_Escriu(arxiuLog,"Localitzem");
+    Log_Escriu("Localitzem");
     int i=1, j=0;
     char domini[20];
     while(missatge[i]!='@') i++;
@@ -365,7 +366,7 @@ int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dom
     domini[j]='\0';
     if(strcmp(domini, dominiloc)==0){
         //domini propi, has de buscar el client i enviarli la solicitud!
-        Log_Escriu(arxiuLog,"DOMINI PROPI");
+        Log_Escriu("DOMINI PROPI");
         char nom[50];
         for(j=1;j<i;j++) nom[j-1]=missatge[j];
         nom[j-1]='\0';
@@ -376,24 +377,24 @@ int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dom
             else cont++;
         }
         if (trobat == 0) {
-            Log_Escriu(arxiuLog,"  Usuari no trobat");
+            Log_Escriu("  Usuari no trobat");
             char buffer[60];
             int b = sprintf(buffer,"B%d%s/%d/%s",2, MIrem, 0, "0.0.0.0");
             UDP_EnviaA(Sck,IPrem,portRem,buffer,b);
         }
         else if(clients[cont].estat==DESCONNECTAT) {
-            Log_Escriu(arxiuLog,"  Usuari desconnectat");
+            Log_Escriu("  Usuari desconnectat");
             char buffer[60];
             int b = sprintf(buffer, "B%d%s/%d/%s", 1, MIrem, 0, "0.0.0.0");
             UDP_EnviaA(Sck, IPrem, portRem, buffer, b);
         }
         else{
-            Log_Escriu(arxiuLog,"  Usuari trobat");
+            Log_Escriu("  Usuari trobat");
             if(UDP_EnviaA(Sck, clients[cont].IP,clients[cont].port,missatge,longMissatge)==-1) return -1;
         }
     }
     else {
-        Log_Escriu(arxiuLog,"  Domini extern");
+        Log_Escriu("  Domini extern");
         char IP[16];
         ResolDNSaIP(domini, IP);
         if (UDP_EnviaA(Sck,IP,1714,missatge,longMissatge)==-1) return -1;
@@ -402,7 +403,7 @@ int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dom
 }
 
 int LUMI_ServidorRLoc(int Sck, char * missatge, int longMissatge, const char* dominiloc, struct Client *clients, int nClients){
-    Log_Escriu(arxiuLog,"Tornem resposta a localització");
+    Log_Escriu("Tornem resposta a localització");
     int i=0, j=0;
     char domini[20];
     while(missatge[i]!='@') i++;
@@ -414,7 +415,7 @@ int LUMI_ServidorRLoc(int Sck, char * missatge, int longMissatge, const char* do
     }
     domini[j]='\0';
     if(strcmp(domini, dominiloc)==0){
-        Log_Escriu(arxiuLog,"  Domini propi");
+        Log_Escriu("  Domini propi");
         //domini propi, has de buscar el client i enviarli la solicitud!
         char nom[50];
         for(j=2;j<i;j++) nom[j-2]=missatge[j];
@@ -427,19 +428,19 @@ int LUMI_ServidorRLoc(int Sck, char * missatge, int longMissatge, const char* do
         }
         if(UDP_EnviaA(Sck, clients[cont].IP,clients[cont].port,missatge,longMissatge)==-1) return -1;
         else{
-            Log_Escriu(arxiuLog,"  Usuari trobat");
+            Log_Escriu("  Usuari trobat");
         }
     }
     else {
         //resoldre domini i repetir resposta
-        Log_Escriu(arxiuLog,"  Domini extern");
+        Log_Escriu("  Domini extern");
         char IP[16];
         ResolDNSaIP(domini, IP);
         if (UDP_EnviaA(Sck,IP,1714,missatge,longMissatge)==-1){
-            Log_Escriu(arxiuLog,"  No hem pogut enviar el paquet");
+            Log_Escriu("  No hem pogut enviar el paquet");
             return -1;
         }
-        Log_Escriu(arxiuLog,"  Enviada resposta");
+        Log_Escriu("  Enviada resposta");
     }
     return 1;
 }
@@ -645,9 +646,9 @@ int ResolDNSaIP(const char *NomDNS, char *IP)
 /* en '\0') d'una longitud qualsevol.                                     */
 /* Retorna -1 si hi ha error; l'identificador del fitxer creat si tot va  */
 /* bé.                                                                    */
-FILE* Log_CreaFitx(const char *NomFitxLog)
+FILE* Log_CreaFitx()
 {
-    FILE* pFile= fopen(NomFitxLog,"wb");
+    FILE* pFile= fopen("log.txt","wb");
     return pFile;
 }
 
@@ -657,11 +658,13 @@ FILE* Log_CreaFitx(const char *NomFitxLog)
 /* en '\0') d'una longitud qualsevol.                                     */
 /* Retorna -1 si hi ha error; el nombre de caràcters del missatge de      */
 /* "log" (sense el '\0') si tot va bé                                     */
-int Log_Escriu(FILE* FitxLog, const char *MissLog)
+int Log_Escriu(const char *MissLog)
 {
-    if(FitxLog!=NULL){
-        fprintf(FitxLog,MissLog);
-        fprintf(FitxLog,"\n");
+    if(arxiuLog!=NULL){
+        fprintf(arxiuLog,MissLog);
+        fprintf(arxiuLog,"\n");
+        fclose(arxiuLog);
+        arxiuLog = fopen("log.txt","ab");
         return strlen(MissLog);
     }
     else return -1;
@@ -670,9 +673,9 @@ int Log_Escriu(FILE* FitxLog, const char *MissLog)
 
 /* Tanca el fitxer de "log" d'identificador "FitxLog".                    */
 /* Retorna -1 si hi ha error; un valor positiu qualsevol si tot va bé.    */
-int Log_TancaFitx(FILE* FitxLog)
+int Log_TancaFitx()
 {
-    fclose(FitxLog);
+    fclose(arxiuLog);
 }
 
 
@@ -680,7 +683,7 @@ int Log_TancaFitx(FILE* FitxLog)
 
 
 int LUMI_EsperaMissatge(int socket) {
-    Log_Escriu(arxiuLog,"Esperem missatge");
+    Log_Escriu("Esperem missatge");
     fd_set conjunt;
     FD_ZERO(&conjunt);
     int i, descmax = 0;
