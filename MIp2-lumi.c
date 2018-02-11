@@ -51,10 +51,12 @@ char nomLog[30];
 
 int LUMI_iniClient(){
     arxiuLog=Log_CreaFitx("logClient.txt");
+    return 0;
 }
 int LUMI_finiClient(){
     Log_Escriu("Desconectem");
     Log_TancaFitx();
+    return 0;
 }
 
 /* Definicio de funcions EXTERNES, és a dir, d'aquelles que en altres     */
@@ -71,7 +73,9 @@ int LUMI_finiClient(){
 /* Retorna -1 si hi ha error; l’identificador del socket creat si tot     */
 /* va bé.                                                                 */
 int LUMI_crearSocket(const char *IPloc, int portUDPloc){
-    Log_Escriu("Creem socket");
+    char log[100];
+    sprintf(log,"Creem socket a %s:%d",IPloc,portUDPloc);
+    Log_Escriu(log);
     return UDP_CreaSock(IPloc, portUDPloc);
 }
 
@@ -82,10 +86,15 @@ int LUMI_crearSocket(const char *IPloc, int portUDPloc){
  * */
 int LUMI_iniServ(const char* nomFitxer, int *nClients, struct Client *client, char* domini){
     FILE * fid = fopen(nomFitxer,"r");
+    if (fid==NULL) {
+        char log[100];
+        sprintf(log,"No hem pogut obrir l'arxiu de configuració %s",nomFitxer);
+        Log_Escriu(log);
+        return -1;
+    }
     int count=0;
     fscanf(fid, "%s", domini);
     domini[29]='\0';
-    if (fid==NULL) return -1;
     if (feof(fid) || ferror(fid)) return -1;
     //fgetc(fid);
     while (!feof(fid)){
@@ -131,7 +140,9 @@ int LUMI_ActualitzarFitxerRegistre(const struct Client *clients, int nClients, c
  * Funció per demanar connexió UDP a un servidor que deixa en estat -established-
  * Retorna -1 si hi ha error; un valor positiu qualsevol si tot va bé.    */
 int LUMI_connexio(int Sck, const char *IPrem, int portUDPrem){
-    Log_Escriu("Demanem connexio");
+    char log[100];
+    sprintf(log,"Demanem connexió a %s:%d pel socket %d",IPrem,portUDPrem,Sck);
+    Log_Escriu(log);
     return UDP_DemanaConnexio(Sck,IPrem, portUDPrem);
 }
 
@@ -139,7 +150,9 @@ int LUMI_connexio(int Sck, const char *IPrem, int portUDPrem){
  * Funció que demana una petició de desregistre al servidor connectat a Sck de l'usuari MI
  * Retorna -2 si el servidor està desconectat; -1 si hi ha error; 0 si el desregistre es correcte; 1 si l'usuari no existeix; 2 si format incorrecte  */
 int LUMI_Desregistre(int Sck, const char * MI){
-    Log_Escriu("Demanem desregistre");
+    char log[100];
+    sprintf(log,"Demanem desregistre pel socket %d",Sck);
+    Log_Escriu(log);
     char buffer[50];
     int b = sprintf(buffer,"D%s", MI);
     int x, i=0, rEnvio;
@@ -165,7 +178,9 @@ int LUMI_Desregistre(int Sck, const char * MI){
  * Funció que demana una petició de registre al servidor connectat a Sck de l'usuari MI
  * Retorna -2 si el servidor està desconectat; -1 si hi ha error; 0 si el desregistre es correcte; 1 si l'usuari no existeix; 2 si format incorrecte  */
 int LUMI_Registre(int Sck, const char * MI){
-    Log_Escriu("Demanem registre");
+    char log[100];
+    sprintf(log,"Demanem registre al socket %d",Sck);
+    Log_Escriu(log);
     char buffer[50];
     int b = sprintf(buffer,"R%s", MI);
     int x, i=0, rEnvio;
@@ -188,7 +203,9 @@ int LUMI_Registre(int Sck, const char * MI){
 }
 
 int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem, char * IP, int * portTCP){
-    Log_Escriu("Demanem localització");
+    char log[100];
+    sprintf(log,"Demanem localització a %s",MIrem);
+    Log_Escriu(log);
     char buffer[60];
     int b = sprintf(buffer,"L%s/%s",MIrem, MIloc);
     int x, i=0, rEnvio;
@@ -234,7 +251,9 @@ int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem, char * IP, 
 
 
 int LUMI_RLocalitzacio(int Sck, const char* IP, int portTCP, int estat){
-    Log_Escriu("Tornem resposta de localització");
+    char log[100];
+    sprintf(log,"Tornem resposta de localització de %s:%d amb estat %d",IP,portTCP,estat);
+    Log_Escriu(log);
     char MIrem1[30];
     char buffer[60];
     char missatge[60];
@@ -254,7 +273,9 @@ int LUMI_RLocalitzacio(int Sck, const char* IP, int portTCP, int estat){
 }
 
 int LUMI_RLocOcupat(int Sck){
-    Log_Escriu("Responem que estem ocupats");
+    char log[100];
+    sprintf(log,"Responem que estem ocupats pel port %d",Sck);
+    Log_Escriu(log);
     char MIrem1[30];
     char buffer[60];
     char missatge[60];
@@ -309,7 +330,9 @@ int LUMI_ServidorReg(struct Client *clients, int nClients,const char *Entrada,  
         i++;
     }
     if(acabat==0) {
-        Log_Escriu("  Usuari inexistent");
+        char log[100];
+        sprintf(log,"Usuari %s no trobat",nom);
+        Log_Escriu(log);
         UDP_EnviaA(socket,IP,port,"A1",2);
         return 1;
     }
@@ -339,7 +362,9 @@ int LUMI_ServidorDesreg(struct Client *clients, int nClients,const char *Entrada
         i++;
     }
     if(acabat==0) {
-        Log_Escriu("  No hem trobat el client");
+        char log[100];
+        sprintf(log,"No hem trobat %s",nom);
+        Log_Escriu(log);
         UDP_EnviaA(socket,IP,port,"A1",2);
         return 1;
     }
@@ -367,7 +392,7 @@ int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dom
     domini[j]='\0';
     if(strcmp(domini, dominiloc)==0){
         //domini propi, has de buscar el client i enviarli la solicitud!
-        Log_Escriu("DOMINI PROPI");
+        Log_Escriu("  DOMINI PROPI");
         char nom[50];
         for(j=1;j<i;j++) nom[j-1]=missatge[j];
         nom[j-1]='\0';
@@ -378,13 +403,17 @@ int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dom
             else cont++;
         }
         if (trobat == 0) {
-            Log_Escriu("  Usuari no trobat");
+            char log[100];
+            sprintf(log,"Usuari %s no trobat",nom);
+            Log_Escriu(log);
             char buffer[60];
             int b = sprintf(buffer,"B%d%s/%d/%s",2, MIrem, 0, "0.0.0.0");
             UDP_EnviaA(Sck,IPrem,portRem,buffer,b);
         }
         else if(clients[cont].estat==DESCONNECTAT) {
-            Log_Escriu("  Usuari desconnectat");
+            char log[100];
+            sprintf(log,"Usuari %s desconnectat",nom);
+            Log_Escriu(log);
             char buffer[60];
             int b = sprintf(buffer, "B%d%s/%d/%s", 1, MIrem, 0, "0.0.0.0");
             UDP_EnviaA(Sck, IPrem, portRem, buffer, b);
@@ -429,7 +458,9 @@ int LUMI_ServidorRLoc(int Sck, char * missatge, int longMissatge, const char* do
         }
         if(UDP_EnviaA(Sck, clients[cont].IP,clients[cont].port,missatge,longMissatge)==-1) return -1;
         else{
-            Log_Escriu("  Usuari trobat");
+            char log[100];
+            sprintf(log,"Usuari %s trobat",nom);
+            Log_Escriu(log);
         }
     }
     else {
@@ -612,7 +643,7 @@ int HaArribatAlgunaCosaEnTemps(const int *LlistaSck, int LongLlistaSck, int Temp
         FD_SET(LlistaSck[i], &conjunt);
         if (LlistaSck[i] > descmax) descmax = LlistaSck[i];
     }
-    if (Temps==-1) if (a=(select(descmax + 1, &conjunt, NULL, NULL, NULL)) == -1) return -1;
+    if (Temps==-1) if ((a=select(descmax + 1, &conjunt, NULL, NULL, NULL)) == -1) return -1;
     else{
         t.tv_sec = Temps/1000;
         t.tv_usec = (Temps%1000)*1000;
@@ -685,7 +716,9 @@ int Log_TancaFitx()
 
 
 int LUMI_EsperaMissatge(int socket) {
-    Log_Escriu("Esperem missatge");
+    char log[100];
+    sprintf(log,"Esperem missatge pel socket %d",socket);
+    Log_Escriu(log);
     fd_set conjunt;
     FD_ZERO(&conjunt);
     int i, descmax = 0;
