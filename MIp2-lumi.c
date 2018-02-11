@@ -49,10 +49,14 @@ int Log_TancaFitx();
 FILE *arxiuLog;
 char nomLog[30];
 
+/* Funció que inicialitza el client, creant un arxiu de log
+ * Retorna 0 */
 int LUMI_iniClient(){
     arxiuLog=Log_CreaFitx("logClient.txt");
     return 0;
 }
+/* Funció que finalitza el client, tancant el log
+ * Retorna 0 */
 int LUMI_finiClient(){
     Log_Escriu("Desconectem");
     Log_TancaFitx();
@@ -111,6 +115,8 @@ int LUMI_iniServ(const char* nomFitxer, int *nClients, struct Client *client, ch
     Log_Escriu("Servidor inicialitzat");
     return 0;
 }
+/* Funció que finalitza el servidor, tancant el log
+ * Retorna 0 */
 int LUMI_finiServ(){
     Log_TancaFitx(arxiuLog);
     return 0;
@@ -202,6 +208,9 @@ int LUMI_Registre(int Sck, const char * MI){
     return ((int)buffer[1]-48);
 }
 
+/* Funció que localitza un altre usuari de MI
+ * Retorna -2 si hem fet timeout, -1 si hi ha hagut algun altre error amb els paquets, o el codi de resposta
+ *  que haguem rebut al paquet, si es que aquest ha estat rebut correctement */
 int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem, char * IP, int * portTCP){
     char log[100];
     sprintf(log,"Demanem localització a %s",MIrem);
@@ -249,7 +258,8 @@ int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem, char * IP, 
     return ((int)buffer[1]-48); //retorna el codi de resposta!
 }
 
-
+/* Envia una resposta de localització per el socket Sck amb les dades corresponents
+ * Retorna -1 si hi ha algun error, o el nombre de bytes enviats en cas contrari */
 int LUMI_RLocalitzacio(int Sck, const char* IP, int portTCP, int estat){
     char log[100];
     sprintf(log,"Tornem resposta de localització de %s:%d amb estat %d",IP,portTCP,estat);
@@ -272,6 +282,8 @@ int LUMI_RLocalitzacio(int Sck, const char* IP, int portTCP, int estat){
     return UDP_Envia(Sck, buffer, b);
 }
 
+/* Respon pel socket Sck que estem ocupats
+ * Retorna -1 si hi ha algun error, o el nombre de bytes enviats en cas contrari */
 int LUMI_RLocOcupat(int Sck){
     char log[100];
     sprintf(log,"Responem que estem ocupats pel port %d",Sck);
@@ -372,6 +384,9 @@ int LUMI_ServidorDesreg(struct Client *clients, int nClients,const char *Entrada
     UDP_EnviaA(socket,IP,port,"A0",2);
     return 0;
 }
+
+/* Funcio del servidor que localitza a un usuari de MI
+ * Retorna -1 si hi ha algun error, o 1 en cas contrari */
 int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dominiloc, struct Client *clients, int nClients, const char* IPrem, int portRem){
     Log_Escriu("Localitzem");
     int i=1, j=0;
@@ -432,6 +447,8 @@ int LUMI_ServidorLoc(int Sck, char * missatge, int longMissatge, const char* dom
     return 1;
 }
 
+/* Funcio pel servidor per enviar una resposta a una petició de localització
+ * Retorna -1 si hi ha algun error, o 1 en cas contrari */
 int LUMI_ServidorRLoc(int Sck, char * missatge, int longMissatge, const char* dominiloc, struct Client *clients, int nClients){
     Log_Escriu("Tornem resposta a localització");
     int i=0, j=0;
@@ -690,7 +707,7 @@ FILE* Log_CreaFitx(const char *nomArxiu)
     return pFile;
 }
 
-/* Escriu al fitxer de "log" d'identificador "FitxLog" el missatge de     */
+/* Escriu al fitxer de "log" el missatge de     */
 /* "log" "MissLog".                                                       */
 /* "MissLog" és un "string" de C (vector de chars imprimibles acabat      */
 /* en '\0') d'una longitud qualsevol.                                     */
@@ -709,7 +726,7 @@ int Log_Escriu(const char *MissLog)
 
 }
 
-/* Tanca el fitxer de "log" d'identificador "FitxLog".                    */
+/* Tanca el fitxer de "log".                    */
 /* Retorna -1 si hi ha error; un valor positiu qualsevol si tot va bé.    */
 int Log_TancaFitx()
 {
@@ -719,7 +736,8 @@ int Log_TancaFitx()
 
 /* Si ho creieu convenient, feu altres funcions...                        */
 
-
+/* Funcio que espera fins que rebem un missatge pel socket especificat
+ * Retorna el socket pel qual hem rebut el missatge */
 int LUMI_EsperaMissatge(int socket) {
     char log[100];
     sprintf(log,"Esperem missatge pel socket %d",socket);
@@ -734,9 +752,14 @@ int LUMI_EsperaMissatge(int socket) {
     FD_ISSET(socket, &conjunt);
     return socket;
 }
+
+/* Funció que rep un paquet udp per un socket específic
+ * Retorna -1 si hi ha algun error, o el nombre de bytes enviats en cas contrari */
 int LUMI_Rep(int Sck, char *SeqBytes, int LongSeqBytes){
     return UDP_Rep(Sck,SeqBytes,LongSeqBytes);
 }
+/* Funció que rep de la ip@port especificats un paquet UDP
+ * Retorna -1 si hi ha algun error, o el nombre de bytes enviats en cas contrari */
 int LUMI_RepDe(int Sck, char *IPrem, int *portUDPrem, char *SeqBytes, int LongSeqBytes){
     return UDP_RepDe(Sck,IPrem,portUDPrem,SeqBytes,LongSeqBytes);
 }
