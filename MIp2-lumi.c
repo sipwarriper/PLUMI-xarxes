@@ -163,9 +163,9 @@ int LUMI_Desregistre(int Sck, const char * MI){
             Log_Escriu("  Enviament de paquet fallit");
             return -1;
         }
-        rEnvio = HaArribatAlgunaCosaEnTemps(a,1,50);
+        if ((rEnvio = HaArribatAlgunaCosaEnTemps(a,1,50))==-1) return -1;
         i++;
-    }while(rEnvio==-2 && i<5);
+    }while(rEnvio!=Sck && i<5);
     if (rEnvio==-2) return -2;
     if ((x = UDP_Rep(Sck, buffer,50))==-1){
         Log_Escriu("  No hem rebut correctement el paquet");
@@ -191,9 +191,9 @@ int LUMI_Registre(int Sck, const char * MI){
             Log_Escriu("  Enviament de paquet fallit");
             return -1;
         }
-        rEnvio = HaArribatAlgunaCosaEnTemps(a,1,50);
+        if ((rEnvio = HaArribatAlgunaCosaEnTemps(a,1,50))==-1) return -1;
         i++;
-    }while(rEnvio==-2 && i<5);
+    }while(rEnvio!=Sck && i<5);
     if (rEnvio==-2) return -2;
     if ((x = UDP_Rep(Sck, buffer,50))==-1){
         Log_Escriu("  No hem rebut correctement el paquet");
@@ -216,9 +216,9 @@ int LUMI_Localitzacio(int Sck, const char *MIloc, const char *MIrem, char * IP, 
             Log_Escriu("  Enviament de paquet fallit");
             return -1;
         }
-        rEnvio = HaArribatAlgunaCosaEnTemps(a,1,50);
+        if ((rEnvio = HaArribatAlgunaCosaEnTemps(a,1,50))==-1) return -1;
         i++;
-    }while(rEnvio==-2 && i<5);
+    }while(rEnvio!=Sck && i<5);
     if (rEnvio==-2){ Log_Escriu("  Timeout");
         return -2;
     }
@@ -638,19 +638,24 @@ int HaArribatAlgunaCosaEnTemps(const int *LlistaSck, int LongLlistaSck, int Temp
     FD_ZERO(&conjunt);
     int i, descmax = 0;
     struct timeval t;
-    //FD_SET(0,&conjunt); //afegim el teclat si cal
+    t.tv_sec = Temps/1000;
+    t.tv_usec = (Temps%1000)*1000;
+    //variables de debuggeig
+    char spam[100];
+    int ispam;
     for (i = 0; i<LongLlistaSck; i++) {
         FD_SET(LlistaSck[i], &conjunt);
         if (LlistaSck[i] > descmax) descmax = LlistaSck[i];
     }
-    if (Temps==-1) if ((a=select(descmax + 1, &conjunt, NULL, NULL, NULL)) == -1) return -1;
+    if (Temps==-1) {
+		if ((a=select(descmax + 1, &conjunt, NULL, NULL, NULL)) == -1) return -1;
+	}
     else{
-        t.tv_sec = Temps/1000;
-        t.tv_usec = (Temps%1000)*1000;
-        if (a=(select(descmax + 1, &conjunt, NULL, NULL, &t)) == -1) return -1;
+        if ((a=select(descmax + 1, &conjunt, NULL, NULL, &t)) == -1) return -1;
+		if (a==0) return -2;
     }
     //si sha de comprovar tb el teclat mirar primer desde aqui
-    if (a==0) return -2;
+
     for (i = 0; i<LongLlistaSck; i++) if (FD_ISSET(LlistaSck[i], &conjunt)) break;
     return LlistaSck[i];
 
